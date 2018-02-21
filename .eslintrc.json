@@ -1,0 +1,18 @@
+{
+  
+    "env": {
+      "browser": true,
+      "node": true,
+      "es6": true
+    },
+  
+    "plugins": ["react"],
+  
+    "extends": ["standard", "standard-react"],
+
+    "rules" : {
+      "indent":["error", 4, { "ignoredNodes": ["JSXElement *"] }],
+      "react/jsx-indent": [1, 4]
+    }
+  
+  }
