@@ -26,8 +26,8 @@ export default class TopNav extends React.Component {
     }
     render () {
         return (
-            <Navbar dark color='primary' expand='md'>
-                <NavbarBrand><NavLink href='/'>Quiz Teacher View</NavLink></NavbarBrand>
+            <Navbar light expand='md'>
+                <NavbarBrand href='/'>Quiz Teacher View</NavbarBrand>
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={this.state.isOpen} navbar>
                     <Nav className='mr-auto' navbar>

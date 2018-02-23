@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Route, BrowserRouter, Switch } from 'react-router-dom'
 
-import Home from './Pages/Home'
+import TopNav from './Components/TopNav'
+import LiveLeaderboard from './Components/LiveLeaderboard'
 
 import registerServiceWorker from './registerServiceWorker'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -11,9 +12,19 @@ const root = document.getElementById('root')
 
 ReactDOM.render((
     <BrowserRouter>
-        <Switch>
-            <Route exact path='/' component={Home} />
-        </Switch>
+        <div>
+            <TopNav />
+            <div className='container'>
+                <div className='row'>
+                    <div className='col-lg-12'>
+                        <Switch>
+                            <Route path='/' component={LiveLeaderboard} />
+                            <Route path='/LiveLeaderboard' component={LiveLeaderboard} />
+                        </Switch>
+                    </div>
+                </div>
+            </div>
+        </div>
     </BrowserRouter>
 ), root)
 
