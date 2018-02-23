@@ -1,6 +1,13 @@
 import React from 'react'
+
 import {
-    Nav
+    Nav,
+    Navbar,
+    NavbarBrand,
+    NavbarToggler,
+    NavItem,
+    NavLink,
+    Collapse
 } from 'reactstrap'
 
 export default class TopNav extends React.Component {
@@ -19,35 +26,20 @@ export default class TopNav extends React.Component {
     }
     render () {
         return (
-            <Nav className='navbar navbar-expand-md navbar-dark bg-primary fixed-top'>
-                <a className='navbar-brand' href='#'>Teacher View</a>
-
-                <button className='navbar-toggler' type='button' data-toggle='collapse' data-target='#navbarsExampleDefault' aria-controls='navbarsExampleDefault'
-                  aria-expanded='false' aria-label='Toggle navigation'>
-                    <span className='navbar-toggler-icon' />
-                </button>
-
-                <div className='collapse navbar-collapse' id='navbarsExampleDefault'>
-                    <ul className='navbar-nav mr-auto' id='main-nav-bar'>
-                        <li className='nav-item'>
-                            <a className='nav-link' href='#' onClick='loadQuizPage()'>Revision Quiz
-                                <span className='sr-only'>(current)</span>
-                            </a>
-                        </li>
-                        <li className='nav-item'>
-                            <a className='nav-link' href='#' onClick='runMyQuiz()'>My Quizzes
-                                <span className='sr-only'>(current)</span>
-                            </a>
-                        </li>
-                        <li className='nav-item'>
-                            <a className='nav-link' href='#' onClick='runLeaderboard()'>Leaderboard
-                                <span className='sr-only'>(current)</span>
-                            </a>
-                        </li>
-                    </ul>
-                    <a className='nav-link disabled' href='#' />
-                </div>
-            </Nav>
+            <Navbar dark color='primary' expand='md'>
+                <NavbarBrand><NavLink href='/'>Quiz Teacher View</NavLink></NavbarBrand>
+                <NavbarToggler onClick={this.toggle} />
+                <Collapse isOpen={this.state.isOpen} navbar>
+                    <Nav className='mr-auto' navbar>
+                        <NavItem>
+                            <NavLink href='/LiveLeaderboard'>Live Leaderboard</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href='/QuestionAnalysis'>Question Analysis</NavLink>
+                        </NavItem>
+                    </Nav>
+                </Collapse>
+            </Navbar>
         )
     }
 }
