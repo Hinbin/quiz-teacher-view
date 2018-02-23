@@ -1,22 +1,24 @@
 import { EventEmitter } from 'events'
 
 import dispatcher from '../dispatcher'
+import fire from '../fire'
 
 class LiveLeaderboardStore extends EventEmitter {
     constructor () {
         super()
-        this.leaderboard = [
-            {
-                uid: 'KASJDHJASKD',
-                name: 'testperson',
-                score: 32
-            },
-            {
-                uid: 'ASKDJHASKD',
-                name: 'another person',
-                score: 54
-            }
-        ]
+        this.lastPerson = ''
+        this.leaderboard = []
+    }
+
+    connectDatabase () {
+        fire.database().ref('weeklyLeaderboard/Computer Science/Overall').orderByValue().on('child_added', snapshot => {
+            this.leaderboard.push({
+                uid: snapshot.key,
+                score: snapshot.val()
+            })
+            this.emit('change')
+            console.log(this.leaderboard)
+        })
     }
 
     loadLeaderboard (leaderboard) {

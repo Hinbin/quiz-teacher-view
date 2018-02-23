@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table } from 'reactstrap'
 
-import LiveLeaderboardStore from '../stores/LiveLeaderboardStore'
+import LiveLeaderboardStore from '../Stores/LiveLeaderboardStore'
 import Entry from './LiveLeaderboard/Entry'
 
 export default class LiveLeaderboard extends React.Component {
@@ -17,13 +17,14 @@ export default class LiveLeaderboard extends React.Component {
     }
 
     componentWillUnmount () {
-        LiveLeaderboardStore.removeListener('change', this.getPerson)
+        LiveLeaderboardStore.removeListener('change', this.getLeaderboard)
     }
 
     getLeaderboard () {
         this.setState({
             leaderboard: LiveLeaderboardStore.getAll()
         })
+        console.log(this.state.leaderboard)
     }
 
     render () {
@@ -44,10 +45,10 @@ export default class LiveLeaderboard extends React.Component {
                             <th>Score</th>
                         </tr>
                     </thead>
-                <tbody>
-                    {Entries}
-                </tbody>
-                </Table>                
+                    <tbody>
+                        {Entries}
+                    </tbody>
+                </Table>
             </div>
         )
     }
