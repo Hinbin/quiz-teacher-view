@@ -1,28 +1,39 @@
 import { EventEmitter } from 'events'
 
 import dispatcher from '../dispatcher'
-import fire from '../fire'
 
 class LiveLeaderboardStore extends EventEmitter {
     constructor () {
         super()
         this.lastPerson = ''
+        this.initialLeaderboard = {}
+        this.currentLeaderboard = {}
         this.leaderboard = []
     }
 
-    connectDatabase () {
-        fire.database().ref('weeklyLeaderboard/Computer Science/Overall').orderByValue().on('child_added', snapshot => {
-            this.leaderboard.push({
-                uid: snapshot.key,
-                score: snapshot.val()
-            })
-            this.emit('change')
-            console.log(this.leaderboard)
-        })
+    loadLeaderboard (newLeaderboard) {
+        this.initialLeaderboard = newLeaderboard
     }
 
-    loadLeaderboard (leaderboard) {
-        this.leaderboard = leaderboard
+    leaderboardChange (leaderboardChange) {
+        const {uid, name, score} = leaderboardChange
+        const liveScore = score - this.initialLeaderboard[uid].score
+        this.currentLeaderboard[uid] = {score: liveScore, name: name, uid: uid}
+
+        var sortable = []
+        for (var key in this.currentLeaderboard) {
+            if (this.currentLeaderboard.hasOwnProperty(key)) {
+                sortable.push(this.currentLeaderboard[key])
+            }
+        }
+
+        sortable.sort((a, b) => b.score - a.score)
+
+        for (var i in sortable) {
+            sortable[i].position = parseInt(i, 10) + 1
+        }
+        this.leaderboard = sortable
+
         this.emit('change')
     }
 
@@ -32,8 +43,13 @@ class LiveLeaderboardStore extends EventEmitter {
 
     handleActions (action) {
         switch (action.type) {
-        case 'LOAD_LEADERBOARD': {
-            this.loadLeaderboard(action.leaderboard)
+        case 'LOAD_LEADERBOARD_COMPLETE': {
+            this.loadLeaderboard(action.value)
+            break
+        }
+        case 'LEADERBOARD_CHANGE':
+        {
+            this.leaderboardChange(action.value)
             break
         }
         default:

@@ -3,6 +3,7 @@ import { Table } from 'reactstrap'
 
 import LiveLeaderboardStore from '../Stores/LiveLeaderboardStore'
 import Entry from './LiveLeaderboard/Entry'
+import * as LiveLeaderboardActions from '../Actions/LiveLeaderboardActions'
 
 export default class LiveLeaderboard extends React.Component {
     constructor () {
@@ -10,6 +11,9 @@ export default class LiveLeaderboard extends React.Component {
         this.state = {
             leaderboard: LiveLeaderboardStore.getAll()
         }
+        this.getLeaderboard = this.getLeaderboard.bind(this)
+        LiveLeaderboardActions.loadLeaderboard()
+        LiveLeaderboardActions.listenToLeaderboard()
     }
 
     componentWillMount () {
@@ -24,14 +28,13 @@ export default class LiveLeaderboard extends React.Component {
         this.setState({
             leaderboard: LiveLeaderboardStore.getAll()
         })
-        console.log(this.state.leaderboard)
     }
 
     render () {
         const { leaderboard } = this.state
 
         const Entries = leaderboard.map((entry) => {
-            return <Entry key={entry.uid} {...entry} />
+            return <Entry key={entry.uid} name={entry.uid} {...entry} />
         })
 
         return (
