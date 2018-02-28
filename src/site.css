@@ -4,9 +4,6 @@
   to { background-color: inherit; }
 }
 .lastChanged {
-  animation:         invalid 1s infinite; /* IE 10+ */
-}
-
-.test {
-  background-color: red;
+  animation-name: lastChanged;
+  animation-duration: 1s;
 }

@@ -1,14 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import styles from '../../site.css'
-
 export default class Entry extends React.Component {
     render () {
         const {lastChanged} = this.props
+        let className = ''
+        if (lastChanged) {
+            className += 'lastChanged'
+        }
 
         return (
-            <tr id={this.props.uid} styleName={test}>
+            <tr id={this.props.uid} className={className}>
                 <td>{this.props.position}</td>
                 <td>{this.props.name}</td>
                 <td>{this.props.score}</td>

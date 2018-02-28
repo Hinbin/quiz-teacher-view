@@ -8,7 +8,7 @@ class LiveLeaderboardStore extends EventEmitter {
         this.initialLeaderboard = {}
         this.currentLeaderboard = {}
         this.leaderboard = []
-        this.lastChange = ''
+        this.lastChanged = ''
     }
 
     loadLeaderboard (newLeaderboard) {
@@ -24,8 +24,11 @@ class LiveLeaderboardStore extends EventEmitter {
         for (var key in this.currentLeaderboard) {
             if (this.currentLeaderboard.hasOwnProperty(key)) {
                 if (uid === key) {
+                    if (this.lastChanged.length > 0) {
+                        this.currentLeaderboard[this.lastChanged].lastChanged = false
+                    }
+                    this.lastChanged = key
                     this.currentLeaderboard[key].lastChanged = true
-                    console.log(this.currentLeaderboard[key])
                 }
                 sortable.push(this.currentLeaderboard[key])
             }
@@ -38,9 +41,13 @@ class LiveLeaderboardStore extends EventEmitter {
         }
         this.leaderboard = sortable
 
-        console.log(this.currentLeaderboard)
-
         this.emit('change')
+
+        setTimeout(() => {
+            this.currentLeaderboard[this.lastChanged].lastChanged = false
+            this.emit('change')
+        },
+        1000)
     }
 
     getAll () {
