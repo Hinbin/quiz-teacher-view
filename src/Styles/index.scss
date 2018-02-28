@@ -1,0 +1,14 @@
+// My Bootstrap configuration
+@import 'custom_bootstrap';
+
+// Bootstrap library
+@import 'bootstrap/scss/bootstrap';
+
+@keyframes lastChanged {
+    from { background-color: red; }
+    to { background-color: inherit; }
+  }
+  .lastChanged {
+    animation-name: lastChanged;
+    animation-duration: 1s;
+  }

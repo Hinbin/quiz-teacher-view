@@ -1,9 +1,0 @@
-
-@keyframes lastChanged {
-  from { background-color: red; }
-  to { background-color: inherit; }
-}
-.lastChanged {
-  animation-name: lastChanged;
-  animation-duration: 1s;
-}

@@ -7,8 +7,7 @@ import LiveLeaderboard from './Components/LiveLeaderboard'
 
 import registerServiceWorker from './registerServiceWorker'
 
-import './site.css'
-import 'bootstrap/dist/css/bootstrap.css'
+import './Styles/index.css'
 
 const root = document.getElementById('root')
 
