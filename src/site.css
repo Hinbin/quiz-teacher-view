@@ -1,0 +1,12 @@
+
+@keyframes lastChanged {
+  from { background-color: red; }
+  to { background-color: inherit; }
+}
+.lastChanged {
+  animation:         invalid 1s infinite; /* IE 10+ */
+}
+
+.test {
+  background-color: red;
+}

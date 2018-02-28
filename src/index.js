@@ -6,6 +6,8 @@ import TopNav from './Components/TopNav'
 import LiveLeaderboard from './Components/LiveLeaderboard'
 
 import registerServiceWorker from './registerServiceWorker'
+
+import './site.css'
 import 'bootstrap/dist/css/bootstrap.css'
 
 const root = document.getElementById('root')

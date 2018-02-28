@@ -34,7 +34,7 @@ export default class LiveLeaderboard extends React.Component {
         const { leaderboard } = this.state
 
         const Entries = leaderboard.map((entry) => {
-            return <Entry key={entry.uid} name={entry.uid} {...entry} />
+            return <Entry key={entry.uid} {...entry} />
         })
 
         return (

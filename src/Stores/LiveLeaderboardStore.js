@@ -5,10 +5,10 @@ import dispatcher from '../dispatcher'
 class LiveLeaderboardStore extends EventEmitter {
     constructor () {
         super()
-        this.lastPerson = ''
         this.initialLeaderboard = {}
         this.currentLeaderboard = {}
         this.leaderboard = []
+        this.lastChange = ''
     }
 
     loadLeaderboard (newLeaderboard) {
@@ -16,13 +16,17 @@ class LiveLeaderboardStore extends EventEmitter {
     }
 
     leaderboardChange (leaderboardChange) {
-        const {uid, name, score} = leaderboardChange
+        const {uid, score} = leaderboardChange
         const liveScore = score - this.initialLeaderboard[uid].score
-        this.currentLeaderboard[uid] = {score: liveScore, name: name, uid: uid}
+        this.currentLeaderboard[uid] = {score: liveScore, ...leaderboardChange}
 
         var sortable = []
         for (var key in this.currentLeaderboard) {
             if (this.currentLeaderboard.hasOwnProperty(key)) {
+                if (uid === key) {
+                    this.currentLeaderboard[key].lastChanged = true
+                    console.log(this.currentLeaderboard[key])
+                }
                 sortable.push(this.currentLeaderboard[key])
             }
         }
@@ -33,6 +37,8 @@ class LiveLeaderboardStore extends EventEmitter {
             sortable[i].position = parseInt(i, 10) + 1
         }
         this.leaderboard = sortable
+
+        console.log(this.currentLeaderboard)
 
         this.emit('change')
     }
