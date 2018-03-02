@@ -1,12 +1,30 @@
 import firebase from 'firebase'
 
-var config = {
-    apiKey: 'AIzaSyDYrOCyl54o1YnHEA30STeXptXbY7oTrIU',
-    authDomain: 'ogatquestionbank.firebaseapp.com',
-    databaseURL: 'https://ogatquestionbank.firebaseio.com',
-    projectId: 'ogatquestionbank',
-    storageBucket: 'ogatquestionbank.appspot.com',
-    messagingSenderId: '754635765238'
+let config
+
+// Switched between the production and test databases depending on if jest is being run.
+if (global.__DEV__ === undefined) {
+    console.log('live db')
+    config = {
+        apiKey: 'AIzaSyDYrOCyl54o1YnHEA30STeXptXbY7oTrIU',
+        authDomain: 'ogatquestionbank.firebaseapp.com',
+        databaseURL: 'https://ogatquestionbank.firebaseio.com',
+        projectId: 'ogatquestionbank',
+        storageBucket: 'ogatquestionbank.appspot.com',
+        messagingSenderId: '754635765238'
+    }
+} else {
+    console.log('test db')
+    config = {
+        apiKey: 'AIzaSyD1FyJC4PMHfINU6ZqH6tUTgKmGiZLalug',
+        authDomain: 'ogatquestionbanktest.firebaseapp.com',
+        databaseURL: 'https://ogatquestionbanktest.firebaseio.com',
+        projectId: 'ogatquestionbanktest',
+        storageBucket: '',
+        messagingSenderId: '904467971812'
+    }
 }
+
 var fire = firebase.initializeApp(config)
+
 export default fire
