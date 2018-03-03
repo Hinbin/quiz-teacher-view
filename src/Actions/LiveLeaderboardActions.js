@@ -19,22 +19,41 @@ export function loadLeaderboard () {
     })
 }
 
+function processLeaderboardChange (snapshot) {
+    fire.database().ref('/users').orderByKey().equalTo(snapshot.key).once('value').then((personSnapshot) => {
+        var uid = snapshot.key
+        var score = {
+            uid: uid,
+            score: snapshot.val(),
+            school: personSnapshot.child(uid + '/school').val(),
+            name: personSnapshot.child(uid + '/displayName').val(),
+            winner: personSnapshot.child(uid + '/winner').val()
+        }
+        dispatcher.dispatch(
+            {
+                type: 'LEADERBOARD_CHANGE',
+                value: score
+            })
+    })
+}
+
+function removeEntry (snapshot) {
+    dispatcher.dispatch({
+        type: 'LEADERBOARD_REMOVE',
+        value: snapshot.key
+    })
+}
+
 export function listenToLeaderboard () {
     fire.database().ref('weeklyLeaderboard/Computer Science/Overall').orderByValue().on('child_changed', snapshot => {
-        fire.database().ref('/users').orderByKey().equalTo(snapshot.key).once('value').then((personSnapshot) => {
-            var uid = snapshot.key
-            var score = {
-                uid: uid,
-                score: snapshot.val(),
-                school: personSnapshot.child(uid + '/school').val(),
-                name: personSnapshot.child(uid + '/displayName').val(),
-                winner: personSnapshot.child(uid + '/winner').val()
-            }
-            dispatcher.dispatch(
-                {
-                    type: 'LEADERBOARD_CHANGE',
-                    value: score
-                })
-        })
+        processLeaderboardChange(snapshot)
+    })
+
+    fire.database().ref('weeklyLeaderboard/Computer Science/Overall').orderByValue().on('child_added', snapshot => {
+        processLeaderboardChange(snapshot)
+    })
+
+    fire.database().ref('weeklyLeaderboard/Computer Science/Overall').orderByValue().on('child_removed', snapshot => {
+        removeEntry(snapshot)
     })
 }

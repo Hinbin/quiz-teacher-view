@@ -3,8 +3,7 @@ import firebase from 'firebase'
 let config
 
 // Switched between the production and test databases depending on if jest is being run.
-if (global.__DEV__ === undefined) {
-    console.log('live db')
+if (process.env.NODE_ENV === 'production') {
     config = {
         apiKey: 'AIzaSyDYrOCyl54o1YnHEA30STeXptXbY7oTrIU',
         authDomain: 'ogatquestionbank.firebaseapp.com',

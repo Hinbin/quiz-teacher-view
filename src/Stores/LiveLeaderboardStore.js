@@ -17,19 +17,54 @@ class LiveLeaderboardStore extends EventEmitter {
 
     leaderboardChange (leaderboardChange) {
         const {uid, score} = leaderboardChange
-        const liveScore = score - this.initialLeaderboard[uid].score
-        this.currentLeaderboard[uid] = {score: liveScore, ...leaderboardChange}
+        // If this is the users first time in the weekly leaderboard,
+        // set their score to 0
+        if (this.initialLeaderboard[uid] === undefined) {
+            this.initialLeaderboard[uid] = 0
+        }
+        // Calculate the difference between the score when the leaderboard was loaded, and the score given
+        // in the change
+        const initialScore = this.initialLeaderboard[uid]
+        const liveScore = score - initialScore
 
+        if (liveScore === 0) return // Don't do anything if this person hasn't increased their score
+
+        if (leaderboardChange.name === null) {
+            leaderboardChange.name = 'Anonymous'
+            leaderboardChange.school = 'Anonymous'
+        }
+
+        // Get all the user details from the change object, but replace the score with the "live score"
+        this.currentLeaderboard[uid] = {...leaderboardChange, score: liveScore}
+
+        if (this.lastChanged.length > 0 && this.currentLeaderboard[this.lastChanged] !== undefined) {
+            this.currentLeaderboard[this.lastChanged].lastChanged = false
+        }
+
+        this.lastChanged = uid
+        this.currentLeaderboard[uid].lastChanged = true
+
+        this.sortLeaderboard(uid)
+
+        this.emit('change')
+
+        // After a second, remove the lastChanged flag.  This allows users who score twice in a
+        // row to flash twice.
+        setTimeout(() => {
+            if (this.currentLeaderboard[this.lastChanged] !== undefined) {
+                this.currentLeaderboard[this.lastChanged].lastChanged = false
+                this.emit('change')
+            }
+        },
+        1000)
+    }
+
+    // Converts the leaderboard object into a sorted array, sorted by score.
+    sortLeaderboard () {
+        // Build the array to be sorted that will contain all the leaderboard information
         var sortable = []
         for (var key in this.currentLeaderboard) {
             if (this.currentLeaderboard.hasOwnProperty(key)) {
-                if (uid === key) {
-                    if (this.lastChanged.length > 0) {
-                        this.currentLeaderboard[this.lastChanged].lastChanged = false
-                    }
-                    this.lastChanged = key
-                    this.currentLeaderboard[key].lastChanged = true
-                }
                 sortable.push(this.currentLeaderboard[key])
             }
         }
@@ -40,21 +75,20 @@ class LiveLeaderboardStore extends EventEmitter {
             sortable[i].position = parseInt(i, 10) + 1
         }
         this.leaderboard = sortable
-
-        this.emit('change')
-
-        setTimeout(() => {
-            this.currentLeaderboard[this.lastChanged].lastChanged = false
-            this.emit('change')
-        },
-        1000)
     }
 
     getAll () {
         return (this.leaderboard)
     }
 
+    leaderboardRemove (uid) {
+        delete this.currentLeaderboard[uid]
+        this.sortLeaderboard()
+        this.emit('change')
+    }
+
     handleActions (action) {
+        console.log(action)
         switch (action.type) {
         case 'LOAD_LEADERBOARD_COMPLETE': {
             this.loadLeaderboard(action.value)
@@ -63,6 +97,11 @@ class LiveLeaderboardStore extends EventEmitter {
         case 'LEADERBOARD_CHANGE':
         {
             this.leaderboardChange(action.value)
+            break
+        }
+        case 'LEADERBOARD_REMOVE':
+        {
+            this.leaderboardRemove(action.value)
             break
         }
         default:

@@ -9,6 +9,9 @@
 # production
 /build
 
+# nightwatch reports
+/nightwatch/reports
+
 # misc
 .DS_Store
 .env.local
