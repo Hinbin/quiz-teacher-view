@@ -10,31 +10,46 @@ class LiveLeaderboardStore extends EventEmitter {
         this.currentLeaderboard = {}
         this.leaderboard = []
         this.lastChanged = ''
-        this.filters = [{
-            name: 'School',
-            options: ['Outwood Academy Adwick',
-                'Outwood Grange', 'Outwood Test School']
-        },
-        {
-            name: 'Subject',
-            options: ['Computer Science', 'History', 'Another One']
-        },
-        {
-            name: 'Options',
-            options: ['1-1 CPU', '1-2 Memory']
-        }]
+        this.currentFilters = []
+        this.filters = []
+    }
+
+    leaderboardFilterChange (value) {
+        // Remove any existing filters with the same name from the array
+        this.currentFilters = this.currentFilters.filter((filter) => {
+            if (filter.name !== value.name) {
+                return true
+            } else return false
+        })
+
+        // Push this new filter onto the array
+        this.currentFilters.push(value)
+
+        if (value.name === 'Schools') {
+            // Sort the leaderboard and redraw it
+            this.sortLeaderboard()
+            this.emit('change')
+        } else if (value.name === 'Subjects') {
+            this.leaderboardPath[0] = value.option
+            this.leaderboardPath[1] = 'Overall'
+        } else if (value.name === 'Topics') {
+            this.leaderboardPath[1] = value.option
+        }
     }
 
     getFilters () {
         return this.filters
     }
 
-    startLoadLeaderboard (path) {
-        this.leaderboardPath = path
+    getCurrentFilters () {
+        return this.currentFilters
     }
 
     loadLeaderboard (newLeaderboard) {
         this.initialLeaderboard = newLeaderboard
+        this.currentLeaderboard = {}
+        this.sortLeaderboard()
+        this.emit('change')
     }
 
     leaderboardChange (leaderboardChange) {
@@ -93,7 +108,9 @@ class LiveLeaderboardStore extends EventEmitter {
         var sortable = []
         for (var key in this.currentLeaderboard) {
             if (this.currentLeaderboard.hasOwnProperty(key)) {
-                sortable.push(this.currentLeaderboard[key])
+                if (this.checkFilters(this.currentLeaderboard[key])) {
+                    sortable.push(this.currentLeaderboard[key])
+                }
             }
         }
 
@@ -109,9 +126,23 @@ class LiveLeaderboardStore extends EventEmitter {
         return (this.leaderboard)
     }
 
+    checkFilters (entry) {
+        let filters = this.currentFilters
+        for (let i in filters) {
+            let filter = filters[i]
+            if (filter.name === 'School' && entry.school !== filter.option) return false
+        }
+        return true
+    }
+
     leaderboardRemove (uid) {
         delete this.currentLeaderboard[uid]
         this.sortLeaderboard()
+        this.emit('change')
+    }
+
+    loadLeaderboardFilters (value) {
+        this.filters = value
         this.emit('change')
     }
 
@@ -119,7 +150,10 @@ class LiveLeaderboardStore extends EventEmitter {
         console.log(action)
         switch (action.type) {
         case 'LOAD_LEADERBOARD' : {
-            this.startLoadLeaderboard(action.value)
+            break
+        }
+        case 'LOAD_LEADERBOARD_FILTERS' : {
+            this.loadLeaderboardFilters(action.value)
             break
         }
         case 'LOAD_LEADERBOARD_COMPLETE': {
@@ -136,6 +170,12 @@ class LiveLeaderboardStore extends EventEmitter {
             this.leaderboardRemove(action.value)
             break
         }
+        case 'LEADERBOARD_FILTER_CHANGE':
+        {
+            this.leaderboardFilterChange(action.value)
+            break
+        }
+
         default:
         }
     }

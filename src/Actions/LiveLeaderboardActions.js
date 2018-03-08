@@ -1,25 +1,85 @@
 import dispatcher from '../dispatcher'
 import fire from '../fire'
 
-export function loadLeaderboard (path) {
+export function loadLeaderboard (path, oldPath) {
+    let dbPath = path.join('/')
     dispatcher.dispatch({
         type: 'LOAD_LEADERBOARD',
-        value: path})
+        value: dbPath})
 
     Promise.all([
-        loadInitialScores(path),
-        loadFilters(path)
+        loadInitialScores(dbPath),
+        loadFilters(path[0])
     ]).then(() => {
         dispatcher.dispatch({type: 'LOAD_LEADERBOARD_FINISHED'})
     })
+
+    listenToLeaderboard(dbPath, oldPath)
 }
 
-function loadFilters () {
-    return ('nout')
+// Load all the filters that can be used by the leaderboard.  Topic filters will be
+// subject specific.
+function loadFilters (subjectFilter) {
+    const db = fire.database()
+    return Promise.all([
+        db.ref('schools/').once('value').then((schoolSnapshot) => {
+            return schoolSnapshot.val()
+        }),
+        db.ref('/weeklyLeaderboard/').once('value').then((subjectSnapshot) => {
+            return subjectSnapshot.val()
+        })
+    ]
+    ).then((snapshots) => {
+        // Look through all the schools and then add them to the array.  Only add unique
+        // schools so we don't get dupilcates
+        const schools = snapshots[0]
+        let schoolArray = []
+        let subjectArray = []
+        let topicArray = []
+
+        for (let i in schools) {
+            let school = schools[i]
+            if (!schoolArray.includes(school)) schoolArray.push(school)
+        }
+
+        // Loop through our top level subjects and get the subject names
+        const subjects = snapshots[1]
+        for (let subject in subjects) {
+            if (!subjectArray.includes(subject)) subjectArray.push(subject)
+        }
+
+        const topics = subjects[subjectFilter]
+
+        if (topics !== undefined) {
+            for (let topic in topics) {
+                if (!topicArray.includes(topic)) topicArray.push(topic)
+            }
+        }
+
+        // Add all the current filters together
+        const leaderboardFilters = [
+            {
+                name: 'Schools',
+                options: schoolArray
+            },
+            {
+                name: 'Subjects',
+                options: subjectArray
+            },
+            {
+                name: 'Topics',
+                options: topicArray
+            }
+        ]
+        dispatcher.dispatch({
+            type: 'LOAD_LEADERBOARD_FILTERS',
+            value: leaderboardFilters
+        })
+    })
 }
 
 function loadInitialScores (path) {
-    return fire.database().ref('weeklyLeaderboard' + path).orderByValue().once('value', snapshot => {
+    return fire.database().ref('weeklyLeaderboard/' + path).orderByValue().once('value', snapshot => {
         let leaderboardObject = {}
 
         snapshot.forEach(function (scoreSnapshot) {
@@ -62,7 +122,15 @@ function removeEntry (snapshot) {
     })
 }
 
-export function listenToLeaderboard (path) {
+function listenToLeaderboard (path, oldPath) {
+    console.log('path ', path)
+    console.log('old path ', oldPath)
+    if (oldPath !== undefined) {
+        oldPath = oldPath.join('/')
+        fire.database().ref('weeklyLeaderboard/' + oldPath).off('child_changed')
+        fire.database().ref('weeklyLeaderboard/' + oldPath).off('child_added')
+        fire.database().ref('weeklyLeaderboard/' + oldPath).off('child_removed')
+    }
     fire.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_changed', snapshot => {
         processLeaderboardChange(snapshot)
     })
@@ -83,4 +151,15 @@ export function setFilter (option, name) {
             option: option,
             name: name
         }})
+
+    // If we've changed the subject, we need to reset the topic as well.
+    if (name === 'Subjects') {
+        loadFilters(option)
+        dispatcher.dispatch({
+            type: 'LEADERBOARD_FILTER_CHANGE',
+            value: {
+                option: 'Overall',
+                name: 'Topics'
+            }})
+    }
 }

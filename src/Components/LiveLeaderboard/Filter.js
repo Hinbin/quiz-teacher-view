@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import * as LiveLeaderboardActions from '../../Actions/LiveLeaderboardActions'
 import {Dropdown, DropdownItem, DropdownToggle, DropdownMenu} from 'reactstrap'
 
 export default class Filter extends React.Component {
@@ -9,8 +8,7 @@ export default class Filter extends React.Component {
 
         this.toggle = this.toggle.bind(this)
         this.state = {
-            dropdownOpen: false,
-            selectedItem: this.props.name
+            dropdownOpen: false
         }
     }
 
@@ -20,22 +18,19 @@ export default class Filter extends React.Component {
         })
     }
 
-    selectItem (option) {
-        this.setState({
-            selectedItem: option
-        })
-        LiveLeaderboardActions.setFilter(option, this.props.name)
+    selectFilter (option) {
+        this.props.selectFilter(option, this.props.name)
     }
 
     render () {
         let {options} = this.props
         let DropdownItems = options.map((option, index) => {
-            return <DropdownItem key={index} onClick={() => this.selectItem(option)}>{option}</DropdownItem>
+            return <DropdownItem key={index} onClick={() => this.selectFilter(option)}>{option}</DropdownItem>
         })
         return (
             <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
                 <DropdownToggle caret>
-                    {this.state.selectedItem}
+                    {this.props.selected}
                 </DropdownToggle>
                 <DropdownMenu>
                     {DropdownItems}
@@ -46,6 +41,8 @@ export default class Filter extends React.Component {
 }
 
 Filter.propTypes = {
+    selected: PropTypes.string,
     name: PropTypes.string,
-    options: PropTypes.array
+    options: PropTypes.array,
+    selectFilter: PropTypes.func
 }

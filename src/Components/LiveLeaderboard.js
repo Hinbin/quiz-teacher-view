@@ -11,11 +11,11 @@ export default class LiveLeaderboard extends React.Component {
         super()
         this.state = {
             leaderboard: LiveLeaderboardStore.getAll(),
-            filters: LiveLeaderboardStore.getFilters()
+            filters: LiveLeaderboardStore.getFilters(),
+            currentFilters: LiveLeaderboardStore.getCurrentFilters()
         }
         this.getLeaderboard = this.getLeaderboard.bind(this)
         LiveLeaderboardActions.loadLeaderboard(LiveLeaderboardStore.leaderboardPath)
-        LiveLeaderboardActions.listenToLeaderboard()
     }
 
     componentWillMount () {
@@ -28,19 +28,38 @@ export default class LiveLeaderboard extends React.Component {
 
     getLeaderboard () {
         this.setState({
-            leaderboard: LiveLeaderboardStore.getAll()
+            leaderboard: LiveLeaderboardStore.getAll(),
+            filters: LiveLeaderboardStore.getFilters(),
+            currentFilters: LiveLeaderboardStore.getCurrentFilters()
         })
     }
 
+    selectFilter (option, name) {
+        const oldPath = LiveLeaderboardStore.leaderboardPath.slice()
+        LiveLeaderboardActions.setFilter(option, name)
+
+        if (name === 'Subjects' || name === 'Topics') {
+            LiveLeaderboardActions.loadLeaderboard(LiveLeaderboardStore.leaderboardPath, oldPath)
+        }
+    }
+
     render () {
-        const { leaderboard, filters } = this.state
+        const { leaderboard, filters, currentFilters } = this.state
 
         const Entries = leaderboard.map((entry) => {
             return <Entry key={entry.uid} {...entry} />
         })
 
         const Filters = filters.map((filter) => {
-            return <Filter key={filter.name} {...filter} />
+            let selected = currentFilters.filter((selectedFilter) => {
+                return selectedFilter.name === filter.name
+            })[0]
+            if (selected === undefined) {
+                selected = filter.name
+            } else {
+                selected = selected.option
+            }
+            return <Filter key={filter.name} selected={selected} selectFilter={this.selectFilter} {...filter} />
         })
 
         return (
