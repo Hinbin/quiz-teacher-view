@@ -1,5 +1,5 @@
 import firebase from 'firebase'
-import fire from '../../src/fire'
+import globals from '../globals'
 
 module.exports = {
     'wait for page to load': function (browser) {
@@ -8,7 +8,7 @@ module.exports = {
                 firebase.database().ref('/').set(null).then(done())
             })
             .perform((done) => {
-                setupDatabase().then(done())
+                globals.setupDatabase().then(done())
             })
             .init()
             .waitForElementVisible('h1', 20000)
@@ -17,7 +17,7 @@ module.exports = {
     'Check all users appear': (browser) => {
         browser
             .perform((done) => {
-                addPoints(['ABCDEF', 'GHIJKL', 'MNOPQR', 'STUVWX'])
+                globals.addPoints(['ABCDEF', 'GHIJKL', 'MNOPQR', 'STUVWX'])
                     .then(done())
             })
             .waitForElementVisible('#ABCDEF')
@@ -25,57 +25,42 @@ module.exports = {
             .waitForElementVisible('#MNOPQR')
             .waitForElementVisible('#STUVWX')
             .expect.element('#ABCDEF-score').text.to.equal('1')
+    },
+    'Check that top score is in position one': (browser) => {
+        browser
+            .perform((done) => {
+                globals.addPoint('STUVWX').then(done())
+            })
+            .expect.element('#STUVWX-pos').text.to.equal('1').before(1000)
+        browser.expect.element('#STUVWX-score').text.to.equal('2')
+        browser.useXpath()
+            .expect.element('//tbody/tr[1]').has.attribute('id').equal('STUVWX')
+        browser.useCss()
+    },
+    'Check all other positions are correct': (browser) => {
+        browser
+            .perform((done) => {
+                globals.addPoints(['STUVWX', 'GHIJKL', 'MNOPQR']).then(done())
+            })
+            .perform((done) => {
+                globals.addPoints(['STUVWX', 'MNOPQR']).then(done())
+            })
+        browser.expect.element('#ABCDEF-pos').text.to.equal('4').before(1000)
+        browser.expect.element('#GHIJKL-pos').text.to.equal('3')
+        browser.expect.element('#MNOPQR-pos').text.to.equal('2')
+        browser.expect.element('#STUVWX-pos').text.to.equal('1')
+        browser.useCss()
+    },
+    'Check teachers are not shown': (browser) => {
+        browser
+            .perform((done) => {
+                globals.addUser('TEACH1', 'Mr. Teacher', true).then(done())
+            })
+            .perform((done) => {
+                globals.setScore('TEACH1', 5).then(done())
+            })
+        browser.pause(1000)
+        browser.expect.element('#TEACH1').to.not.be.present
         browser.end()
     }
-}
-
-function setupDatabase () {
-    return Promise.all([
-        addUser('ABCDEF', 'Alice'),
-        addUser('GHIJKL', 'Bob'),
-        addUser('MNOPQR', 'Charlie'),
-        addUser('STUVWX', 'Dave'),
-        fire.database().ref('/weeklyLeaderboard/Computer Science/Overall/').set(
-            {
-                ABCDEF: 4,
-                GHIJKL: 4,
-                MNOPQR: 3,
-                STUVWX: 2
-            })
-    ])
-}
-
-function removeLBEntry (uid) {
-    return fire.database().ref('/weeklyLeaderboard/Computer Science/Overall/' + uid).set(null)
-}
-
-function addUser (uid, displayName, isTeacher) {
-    if (isTeacher === undefined) isTeacher = false
-    let db = firebase.database()
-    return db.ref('users/' + uid).set({
-        displayName: displayName,
-        school: 'Test School',
-        isTeacher: false
-    })
-}
-
-function setScore (uid, score) {
-    let db = firebase.database()
-    return db.ref('weeklyLeaderboard/Computer Science/Overall/' + uid).set(score)
-}
-
-function addPoint (uid) {
-    let db = firebase.database()
-    return db.ref('weeklyLeaderboard/Computer Science/Overall/' + uid).transaction((score) => {
-        score = score + 1
-        return score
-    })
-}
-
-function addPoints (uids) {
-    let promiseArray = []
-    for (let i in uids) {
-        promiseArray.push(addPoint(uids[i]))
-    }
-    return Promise.all(promiseArray)
 }

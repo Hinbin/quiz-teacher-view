@@ -5,10 +5,32 @@ import dispatcher from '../dispatcher'
 class LiveLeaderboardStore extends EventEmitter {
     constructor () {
         super()
+        this.leaderboardPath = ['Computer Science', 'Overall']
         this.initialLeaderboard = {}
         this.currentLeaderboard = {}
         this.leaderboard = []
         this.lastChanged = ''
+        this.filters = [{
+            name: 'School',
+            options: ['Outwood Academy Adwick',
+                'Outwood Grange', 'Outwood Test School']
+        },
+        {
+            name: 'Subject',
+            options: ['Computer Science', 'History', 'Another One']
+        },
+        {
+            name: 'Options',
+            options: ['1-1 CPU', '1-2 Memory']
+        }]
+    }
+
+    getFilters () {
+        return this.filters
+    }
+
+    startLoadLeaderboard (path) {
+        this.leaderboardPath = path
     }
 
     loadLeaderboard (newLeaderboard) {
@@ -22,6 +44,12 @@ class LiveLeaderboardStore extends EventEmitter {
         if (this.initialLeaderboard[uid] === undefined) {
             this.initialLeaderboard[uid] = 0
         }
+
+        // Don't show this person if they're flagged as a teacher
+        if (leaderboardChange.isTeacher !== undefined && leaderboardChange.isTeacher === true) {
+            return
+        }
+
         // Calculate the difference between the score when the leaderboard was loaded, and the score given
         // in the change
         const initialScore = this.initialLeaderboard[uid]
@@ -90,6 +118,10 @@ class LiveLeaderboardStore extends EventEmitter {
     handleActions (action) {
         console.log(action)
         switch (action.type) {
+        case 'LOAD_LEADERBOARD' : {
+            this.startLoadLeaderboard(action.value)
+            break
+        }
         case 'LOAD_LEADERBOARD_COMPLETE': {
             this.loadLeaderboard(action.value)
             break

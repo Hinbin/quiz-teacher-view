@@ -1,9 +1,25 @@
 import dispatcher from '../dispatcher'
 import fire from '../fire'
 
-export function loadLeaderboard () {
-    dispatcher.dispatch({type: 'LOAD_LEADERBOARD'})
-    fire.database().ref('weeklyLeaderboard/Computer Science/Overall').orderByValue().once('value', snapshot => {
+export function loadLeaderboard (path) {
+    dispatcher.dispatch({
+        type: 'LOAD_LEADERBOARD',
+        value: path})
+
+    Promise.all([
+        loadInitialScores(path),
+        loadFilters(path)
+    ]).then(() => {
+        dispatcher.dispatch({type: 'LOAD_LEADERBOARD_FINISHED'})
+    })
+}
+
+function loadFilters () {
+    return ('nout')
+}
+
+function loadInitialScores (path) {
+    return fire.database().ref('weeklyLeaderboard' + path).orderByValue().once('value', snapshot => {
         let leaderboardObject = {}
 
         snapshot.forEach(function (scoreSnapshot) {
@@ -11,11 +27,12 @@ export function loadLeaderboard () {
             // Get the score, name, work out the position and then add the value to the scoreArray.
             leaderboardObject[uid] = scoreSnapshot.val()
         })
+
         // Now we have all of the results from the DB, make sure we sort it.  Otherwise late results are places first.
         dispatcher.dispatch({
             type: 'LOAD_LEADERBOARD_COMPLETE',
-            value: leaderboardObject}
-        )
+            value: leaderboardObject
+        })
     })
 }
 
@@ -27,7 +44,8 @@ function processLeaderboardChange (snapshot) {
             score: snapshot.val(),
             school: personSnapshot.child(uid + '/school').val(),
             name: personSnapshot.child(uid + '/displayName').val(),
-            winner: personSnapshot.child(uid + '/winner').val()
+            winner: personSnapshot.child(uid + '/winner').val(),
+            isTeacher: personSnapshot.child(uid + '/isTeacher').val()
         }
         dispatcher.dispatch(
             {
@@ -44,16 +62,25 @@ function removeEntry (snapshot) {
     })
 }
 
-export function listenToLeaderboard () {
-    fire.database().ref('weeklyLeaderboard/Computer Science/Overall').orderByValue().on('child_changed', snapshot => {
+export function listenToLeaderboard (path) {
+    fire.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_changed', snapshot => {
         processLeaderboardChange(snapshot)
     })
 
-    fire.database().ref('weeklyLeaderboard/Computer Science/Overall').orderByValue().on('child_added', snapshot => {
+    fire.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_added', snapshot => {
         processLeaderboardChange(snapshot)
     })
 
-    fire.database().ref('weeklyLeaderboard/Computer Science/Overall').orderByValue().on('child_removed', snapshot => {
+    fire.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_removed', snapshot => {
         removeEntry(snapshot)
     })
+}
+
+export function setFilter (option, name) {
+    dispatcher.dispatch({
+        type: 'LEADERBOARD_FILTER_CHANGE',
+        value: {
+            option: option,
+            name: name
+        }})
 }
