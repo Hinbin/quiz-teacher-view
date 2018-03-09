@@ -13,9 +13,6 @@ export async function startFirebaseTestServer () {
     return { server, dbRef }
 }
 
-let dbRef
-
 beforeAll(async () => {
-    ({ dbRef } = await startFirebaseTestServer())
-    console.log(dbRef)
+    return startFirebaseTestServer()
 })

@@ -123,8 +123,6 @@ function removeEntry (snapshot) {
 }
 
 function listenToLeaderboard (path, oldPath) {
-    console.log('path ', path)
-    console.log('old path ', oldPath)
     if (oldPath !== undefined) {
         oldPath = oldPath.join('/')
         fire.database().ref('weeklyLeaderboard/' + oldPath).off('child_changed')

@@ -147,7 +147,6 @@ class LiveLeaderboardStore extends EventEmitter {
     }
 
     handleActions (action) {
-        console.log(action)
         switch (action.type) {
         case 'LOAD_LEADERBOARD' : {
             break

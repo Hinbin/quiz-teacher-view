@@ -13,7 +13,6 @@ if (process.env.NODE_ENV === 'production') {
         messagingSenderId: '754635765238'
     }
 } else {
-    console.log('test db')
     config = {
         apiKey: 'AIzaSyD1FyJC4PMHfINU6ZqH6tUTgKmGiZLalug',
         authDomain: 'ogatquestionbanktest.firebaseapp.com',
