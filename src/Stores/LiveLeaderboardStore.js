@@ -80,10 +80,6 @@ class LiveLeaderboardStore extends EventEmitter {
         // Get all the user details from the change object, but replace the score with the "live score"
         this.currentLeaderboard[uid] = {...leaderboardChange, score: liveScore}
 
-        if (this.lastChanged.length > 0 && this.currentLeaderboard[this.lastChanged] !== undefined) {
-            this.currentLeaderboard[this.lastChanged].lastChanged = false
-        }
-
         this.lastChanged = uid
         this.currentLeaderboard[uid].lastChanged = true
 

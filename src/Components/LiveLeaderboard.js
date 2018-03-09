@@ -76,6 +76,7 @@ export default class LiveLeaderboard extends React.Component {
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
+                                <th>School</th>
                                 <th>Score</th>
                             </tr>
                         </thead>

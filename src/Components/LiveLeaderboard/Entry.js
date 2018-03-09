@@ -13,6 +13,7 @@ export default class Entry extends React.Component {
             <tr id={this.props.uid} className={className}>
                 <td id={this.props.uid + '-pos'}>{this.props.position}</td>
                 <td id={this.props.uid + '-name'}>{this.props.name}</td>
+                <td id={this.props.uid + '-school'}>{this.props.school}</td>
                 <td id={this.props.uid + '-score'}>{this.props.score}</td>
             </tr>
         )
@@ -24,5 +25,6 @@ Entry.propTypes = {
     position: PropTypes.number,
     name: PropTypes.string,
     score: PropTypes.number,
+    school: PropTypes.string,
     lastChanged: PropTypes.bool
 }
