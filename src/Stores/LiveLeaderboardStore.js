@@ -130,7 +130,7 @@ class LiveLeaderboardStore extends EventEmitter {
         let filters = this.currentFilters
         for (let i in filters) {
             let filter = filters[i]
-            if (filter.name === 'School' && entry.school !== filter.option) return false
+            if (filter.name === 'Schools' && entry.school !== filter.option) return false
         }
         return true
     }

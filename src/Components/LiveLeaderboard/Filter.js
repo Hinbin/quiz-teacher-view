@@ -25,10 +25,11 @@ export default class Filter extends React.Component {
     render () {
         let {options} = this.props
         let DropdownItems = options.map((option, index) => {
-            return <DropdownItem key={index} onClick={() => this.selectFilter(option)}>{option}</DropdownItem>
+            const idName = this.props.name + '-' + option.replace(' ', '-')
+            return <DropdownItem key={index} id={idName} onClick={() => this.selectFilter(option)}>{option}</DropdownItem>
         })
         return (
-            <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+            <Dropdown id={this.props.name.replace(' ', '-') + '-dropdown'} isOpen={this.state.dropdownOpen} toggle={this.toggle}>
                 <DropdownToggle caret>
                     {this.props.selected}
                 </DropdownToggle>

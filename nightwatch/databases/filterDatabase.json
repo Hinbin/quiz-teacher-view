@@ -1,0 +1,51 @@
+{
+    "schools" : {
+      "adwickoutwoodcom" : "Outwood Academy Adwick",
+      "grangeoutwoodcom" : "Outwood Grange",
+      "studentadwickoutwoodcom" : "Outwood Academy Adwick",
+      "studentgrangeoutwoodcom" : "Outwood Grange",
+      "testschoolcom" : "Test School"
+    },
+    "users" : {
+      "ABCDEF" : {
+        "displayName" : "Alice",
+        "isTeacher" : false,
+        "school" : "Test School"
+      },
+      "GHIJKL" : {
+        "displayName" : "Bob",
+        "isTeacher" : false,
+        "school" : "Outwood Grange"
+      },
+      "MNOPQR" : {
+        "displayName" : "Charlie",
+        "isTeacher" : false,
+        "school" : "Test School"
+      },
+      "STUVWX" : {
+        "displayName" : "Dave",
+        "isTeacher" : false,
+        "school" : "Test School"
+      }
+    },
+    "weeklyLeaderboard" : {
+      "Computer Science" : {
+        "Overall" : {
+          "ABCDEF" : 5,
+          "GHIJKL" : 5
+        },
+        "System Architecture" : {
+          "ABCDEF" : 5
+        }
+      },
+      "History" : {
+        "Overall" : {
+          "GHJIKL" : 5
+        },
+        "WW2" : {
+          "GHIJKL" : 5
+        }
+      }
+    }
+  }
+  

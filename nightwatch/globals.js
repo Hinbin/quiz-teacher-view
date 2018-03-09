@@ -24,6 +24,10 @@ module.exports = {
         ])
     },
 
+    loadDatabase: function (database) {
+        return fire.database().ref().set(database)
+    },
+
     removeLBEntry: function (uid) {
         return fire.database().ref('/weeklyLeaderboard/Computer Science/Overall/' + uid).set(null)
     },
@@ -43,9 +47,10 @@ module.exports = {
         return db.ref('weeklyLeaderboard/Computer Science/Overall/' + uid).set(score)
     },
 
-    addPoint: function (uid) {
+    addPoint: function (uid, location) {
+        if (location === undefined) location = 'weeklyLeaderboard/Computer Science/Overall/'
         let db = firebase.database()
-        return db.ref('weeklyLeaderboard/Computer Science/Overall/' + uid).transaction((score) => {
+        return db.ref(location + uid).transaction((score) => {
             score = score + 1
             return score
         })
