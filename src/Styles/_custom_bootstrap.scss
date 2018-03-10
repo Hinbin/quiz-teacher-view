@@ -1,5 +1,11 @@
-$new-color: #ad9a5b;
+$outwoodpurple: #5A3791;
+$outwoodlightpurple: #72628b;
+$outwoodborder: #605275;
+$outwoodhover: #594d6d;
 
-$theme-colors: (
-    primary: $new-color
-)
+$theme-colors: (    
+    primary: $outwoodpurple,
+    secondary: $outwoodlightpurple,
+    dark: $outwoodpurple,
+    light: $outwoodlightpurple
+) !default

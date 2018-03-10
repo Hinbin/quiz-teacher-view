@@ -17,6 +17,34 @@ export function loadLeaderboard (path, oldPath) {
     listenToLeaderboard(dbPath, oldPath)
 }
 
+export function resetLeaderboard (path, oldpath) {
+    localStorage.removeItem('leaderboard')
+    dispatcher.dispatch({
+        type: 'RESET_LEADERBOARD'
+    })
+    loadLeaderboard(path, oldpath)
+}
+
+export function setFilter (option, name) {
+    dispatcher.dispatch({
+        type: 'LEADERBOARD_FILTER_CHANGE',
+        value: {
+            option: option,
+            name: name
+        }})
+
+    // If we've changed the subject, we need to reset the topic as well.
+    if (name === 'Subjects') {
+        loadFilters(option)
+        dispatcher.dispatch({
+            type: 'LEADERBOARD_FILTER_CHANGE',
+            value: {
+                option: 'Overall',
+                name: 'Topics'
+            }})
+    }
+}
+
 // Load all the filters that can be used by the leaderboard.  Topic filters will be
 // subject specific.
 function loadFilters (subjectFilter) {
@@ -79,21 +107,31 @@ function loadFilters (subjectFilter) {
 }
 
 function loadInitialScores (path) {
-    return fire.database().ref('weeklyLeaderboard/' + path).orderByValue().once('value', snapshot => {
-        let leaderboardObject = {}
+    let initialLeaderboard = JSON.parse(localStorage.getItem('leaderboard'))
+    let leaderboardObject = {}
 
-        snapshot.forEach(function (scoreSnapshot) {
-            var uid = scoreSnapshot.key
-            // Get the score, name, work out the position and then add the value to the scoreArray.
-            leaderboardObject[uid] = scoreSnapshot.val()
+    if (initialLeaderboard === null) {
+        return fire.database().ref('weeklyLeaderboard/' + path).orderByValue().once('value', snapshot => {
+            snapshot.forEach(function (scoreSnapshot) {
+                var uid = scoreSnapshot.key
+                // Get the score, name, work out the position and then add the value to the scoreArray.
+                leaderboardObject[uid] = scoreSnapshot.val()
+            })
+
+            // Now we have all of the results from the DB, make sure we sort it.  Otherwise late results are places first.
+            dispatcher.dispatch({
+                type: 'LOAD_LEADERBOARD_COMPLETE',
+                value: leaderboardObject
+            })
         })
-
-        // Now we have all of the results from the DB, make sure we sort it.  Otherwise late results are places first.
+    } else {
+        leaderboardObject = initialLeaderboard
         dispatcher.dispatch({
             type: 'LOAD_LEADERBOARD_COMPLETE',
             value: leaderboardObject
         })
-    })
+        return Promise.resolve()
+    }
 }
 
 function processLeaderboardChange (snapshot) {
@@ -123,12 +161,15 @@ function removeEntry (snapshot) {
 }
 
 function listenToLeaderboard (path, oldPath) {
+    // If we have an old leaderboard we have been listening to, stop listening to it
     if (oldPath !== undefined) {
         oldPath = oldPath.join('/')
         fire.database().ref('weeklyLeaderboard/' + oldPath).off('child_changed')
         fire.database().ref('weeklyLeaderboard/' + oldPath).off('child_added')
         fire.database().ref('weeklyLeaderboard/' + oldPath).off('child_removed')
     }
+
+    // Attach listeners to the leaderboard we are interested in
     fire.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_changed', snapshot => {
         processLeaderboardChange(snapshot)
     })
@@ -140,24 +181,4 @@ function listenToLeaderboard (path, oldPath) {
     fire.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_removed', snapshot => {
         removeEntry(snapshot)
     })
-}
-
-export function setFilter (option, name) {
-    dispatcher.dispatch({
-        type: 'LEADERBOARD_FILTER_CHANGE',
-        value: {
-            option: option,
-            name: name
-        }})
-
-    // If we've changed the subject, we need to reset the topic as well.
-    if (name === 'Subjects') {
-        loadFilters(option)
-        dispatcher.dispatch({
-            type: 'LEADERBOARD_FILTER_CHANGE',
-            value: {
-                option: 'Overall',
-                name: 'Topics'
-            }})
-    }
 }

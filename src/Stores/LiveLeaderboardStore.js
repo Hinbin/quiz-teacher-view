@@ -84,8 +84,10 @@ class LiveLeaderboardStore extends EventEmitter {
         this.currentLeaderboard[uid].lastChanged = true
 
         this.sortLeaderboard(uid)
-
         this.emit('change')
+
+        // Save the current leaderboard into local storage for retrival later
+        localStorage.setItem('leaderboard', JSON.stringify(this.initialLeaderboard))
 
         // After a second, remove the lastChanged flag.  This allows users who score twice in a
         // row to flash twice.
@@ -143,6 +145,7 @@ class LiveLeaderboardStore extends EventEmitter {
     }
 
     handleActions (action) {
+        console.log(action)
         switch (action.type) {
         case 'LOAD_LEADERBOARD' : {
             break

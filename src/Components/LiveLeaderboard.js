@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Row } from 'reactstrap'
+import { Table, Row, Button } from 'reactstrap'
 
 import LiveLeaderboardStore from '../Stores/LiveLeaderboardStore'
 import Entry from './LiveLeaderboard/Entry'
@@ -43,13 +43,19 @@ export default class LiveLeaderboard extends React.Component {
         }
     }
 
+    resetLeaderboard () {
+        LiveLeaderboardActions.resetLeaderboard(LiveLeaderboardStore.leaderboardPath)
+    }
+
     render () {
         const { leaderboard, filters, currentFilters } = this.state
 
+        // Map every entry in the current leaderboard array into an entry component
         const Entries = leaderboard.map((entry) => {
             return <Entry key={entry.uid} {...entry} />
         })
 
+        // Display all filters that are currently defined.
         const Filters = filters.map((filter) => {
             let selected = currentFilters.filter((selectedFilter) => {
                 return selectedFilter.name === filter.name
@@ -64,11 +70,12 @@ export default class LiveLeaderboard extends React.Component {
 
         return (
             <div>
-                <Row>
+                <Row className='page-header'>
                     <h1>Live Leaderboard</h1>
                 </Row>
-                <Row className='d-flex justify-content-around'>
+                <Row className='d-flex justify-content-around filter-block'>
                     {Filters}
+                    <Button onClick={() => this.resetLeaderboard()}>Reset</Button>
                 </Row>
                 <Row>
                     <Table>

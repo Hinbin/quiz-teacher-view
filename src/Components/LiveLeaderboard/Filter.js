@@ -29,7 +29,7 @@ export default class Filter extends React.Component {
             return <DropdownItem key={index} id={idName} onClick={() => this.selectFilter(option)}>{option}</DropdownItem>
         })
         return (
-            <Dropdown id={this.props.name.replace(' ', '-') + '-dropdown'} isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+            <Dropdown id={this.props.name.replace(' ', '-') + '-dropdown'} isOpen={this.state.dropdownOpen} toggle={this.toggle} className='filter'>
                 <DropdownToggle caret>
                     {this.props.selected}
                 </DropdownToggle>
