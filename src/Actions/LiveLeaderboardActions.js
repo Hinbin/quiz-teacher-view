@@ -7,10 +7,12 @@ export function loadLeaderboard (path, oldPath) {
         type: 'LOAD_LEADERBOARD',
         value: dbPath})
 
-    Promise.all([
-        loadInitialScores(dbPath),
-        loadFilters(path[0])
-    ]).then(() => {
+    fire.database().ref('/weeklyLeaderboard/').once('value').then((leaderboardSnapshot) => {
+        return leaderboardSnapshot
+    }).then((leaderboardSnapshot) => {
+        loadInitialScores(leaderboardSnapshot)
+        loadFilters(leaderboardSnapshot, path[0])
+    }).then(() => {
         dispatcher.dispatch({type: 'LOAD_LEADERBOARD_FINISHED'})
     })
 
@@ -35,7 +37,6 @@ export function setFilter (option, name) {
 
     // If we've changed the subject, we need to reset the topic as well.
     if (name === 'Subjects') {
-        loadFilters(option)
         dispatcher.dispatch({
             type: 'LEADERBOARD_FILTER_CHANGE',
             value: {
@@ -47,21 +48,15 @@ export function setFilter (option, name) {
 
 // Load all the filters that can be used by the leaderboard.  Topic filters will be
 // subject specific.
-function loadFilters (subjectFilter) {
+function loadFilters (leaderboardSnapshot, subjectFilter) {
     const db = fire.database()
-    return Promise.all([
-        db.ref('schools/').once('value').then((schoolSnapshot) => {
-            return schoolSnapshot.val()
-        }),
-        db.ref('/weeklyLeaderboard/').once('value').then((subjectSnapshot) => {
-            return subjectSnapshot.val()
-        })
-    ]
-    ).then((snapshots) => {
+    db.ref('schools/').once('value').then((schoolSnapshot) => {
+        return schoolSnapshot
+    }).then((schoolSnapshot) => {
         // Look through all the schools and then add them to the array.  Only add unique
         // schools so we don't get dupilcates
-        const schools = snapshots[0]
-        let schoolArray = []
+        const schools = schoolSnapshot.val()
+        let schoolArray = ['All']
         let subjectArray = []
         let topicArray = []
 
@@ -71,7 +66,7 @@ function loadFilters (subjectFilter) {
         }
 
         // Loop through our top level subjects and get the subject names
-        const subjects = snapshots[1]
+        const subjects = leaderboardSnapshot.val()
         for (let subject in subjects) {
             if (!subjectArray.includes(subject)) subjectArray.push(subject)
         }
@@ -106,23 +101,18 @@ function loadFilters (subjectFilter) {
     })
 }
 
-function loadInitialScores (path) {
+function loadInitialScores (leaderboardSnapshot) {
     let initialLeaderboard = JSON.parse(localStorage.getItem('leaderboard'))
     let leaderboardObject = {}
 
     if (initialLeaderboard === null) {
-        return fire.database().ref('weeklyLeaderboard/' + path).orderByValue().once('value', snapshot => {
-            snapshot.forEach(function (scoreSnapshot) {
-                var uid = scoreSnapshot.key
-                // Get the score, name, work out the position and then add the value to the scoreArray.
-                leaderboardObject[uid] = scoreSnapshot.val()
-            })
+        // Get the score, name, work out the position and then add the value to the scoreArray.
+        leaderboardObject = leaderboardSnapshot.val()
 
-            // Now we have all of the results from the DB, make sure we sort it.  Otherwise late results are places first.
-            dispatcher.dispatch({
-                type: 'LOAD_LEADERBOARD_COMPLETE',
-                value: leaderboardObject
-            })
+        // Now we have all of the results from the DB, make sure we sort it.  Otherwise late results are places first.
+        dispatcher.dispatch({
+            type: 'LOAD_LEADERBOARD_COMPLETE',
+            value: leaderboardObject
         })
     } else {
         leaderboardObject = initialLeaderboard
@@ -130,7 +120,6 @@ function loadInitialScores (path) {
             type: 'LOAD_LEADERBOARD_COMPLETE',
             value: leaderboardObject
         })
-        return Promise.resolve()
     }
 }
 

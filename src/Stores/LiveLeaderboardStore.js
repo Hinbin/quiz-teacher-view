@@ -53,7 +53,7 @@ class LiveLeaderboardStore extends EventEmitter {
     }
 
     leaderboardChange (leaderboardChange) {
-        const {uid, score} = leaderboardChange
+        const {uid} = leaderboardChange
         // If this is the users first time in the weekly leaderboard,
         // set their score to 0
         if (this.initialLeaderboard[uid] === undefined) {
@@ -65,10 +65,7 @@ class LiveLeaderboardStore extends EventEmitter {
             return
         }
 
-        // Calculate the difference between the score when the leaderboard was loaded, and the score given
-        // in the change
-        const initialScore = this.initialLeaderboard[uid]
-        const liveScore = score - initialScore
+        const liveScore = this.calculateLiveScore(leaderboardChange)
 
         if (liveScore === 0) return // Don't do anything if this person hasn't increased their score
 
@@ -100,6 +97,16 @@ class LiveLeaderboardStore extends EventEmitter {
         1000)
     }
 
+    calculateLiveScore (leaderboardChange) {
+        const {uid, score} = leaderboardChange
+        const path = this.leaderboardPath
+        // Calculate the difference between the score when the leaderboard was loaded, and the score given
+        // in the change
+        const initialScore = this.initialLeaderboard[path[0]][path[1]][uid]
+        const liveScore = score - initialScore
+        return liveScore
+    }
+
     // Converts the leaderboard object into a sorted array, sorted by score.
     sortLeaderboard () {
         // Build the array to be sorted that will contain all the leaderboard information
@@ -128,7 +135,7 @@ class LiveLeaderboardStore extends EventEmitter {
         let filters = this.currentFilters
         for (let i in filters) {
             let filter = filters[i]
-            if (filter.name === 'Schools' && entry.school !== filter.option) return false
+            if (filter.name === 'Schools' && filter.option !== 'All' && entry.school !== filter.option) return false
         }
         return true
     }

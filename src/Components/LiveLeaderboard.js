@@ -61,10 +61,17 @@ export default class LiveLeaderboard extends React.Component {
                 return selectedFilter.name === filter.name
             })[0]
             if (selected === undefined) {
-                selected = filter.name
+                if (filter.name === 'Schools') {
+                    selected = 'All'
+                } else if (filter.name === 'Subjects') {
+                    selected = LiveLeaderboardStore.leaderboardPath[0]
+                } else if (filter.name === 'Topics') {
+                    selected = LiveLeaderboardStore.leaderboardPath[1]
+                }
             } else {
                 selected = selected.option
             }
+
             return <Filter key={filter.name} selected={selected} selectFilter={this.selectFilter} {...filter} />
         })
 
