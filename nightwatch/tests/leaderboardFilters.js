@@ -2,8 +2,19 @@ import firebase from 'firebase'
 import globals from '../globals'
 import filterDB from '../databases/filterDatabase.json'
 
+import * as loginDetails from '../loginDetails'
+
 module.exports = {
-    'wait for page to load': function (browser) {
+    'See if page loads': function (browser) {
+        var login = browser.page.signIn()
+        var leaderboard = browser.page.leaderboard()
+
+        login
+            .navigate()
+            .simpleLogin(loginDetails.validUsername, loginDetails.validPassword)
+
+        leaderboard.navigate()
+
         browser
             .perform((done) => {
                 firebase.database().ref('/').set(null).then(done())
@@ -38,12 +49,9 @@ module.exports = {
             .click('#Schools-Test-School')
             .expect.element('#GHIJKL').to.not.be.present
         browser.expect.element('#ABCDEF').to.be.present
-        browser.end()
     },
     'Check points are added after filter select': function (browser) {
-        browser
-            .init()
-            .waitForElementVisible('#reset-button', 20000)
+        browser.waitForElementVisible('#reset-button', 20000)
             .click('#reset-button')
             .pause(1000)
             .perform((done) => {
@@ -60,11 +68,9 @@ module.exports = {
             })
             .expect.element('#ABCDEF').to.be.present
         browser.expect.element('#GHIJKL').to.be.present
-        browser.end()
     },
     'Check points are are not added for different subjects': function (browser) {
         browser
-            .init()
             .waitForElementVisible('#reset-button', 20000)
             .click('#reset-button')
             .pause(1000)
@@ -81,11 +87,9 @@ module.exports = {
                 globals.addPoint('GHIJKL', 'weeklyLeaderboard/History/Overall/').then(done())
             })
             .expect.element('#GHIJKL').to.be.present
-        browser.end()
     },
     'Check that topic is overall by default on new subject': function (browser) {
         browser
-            .init()
             .waitForElementVisible('#reset-button', 20000)
             .click('#reset-button')
             .pause(1000)
@@ -104,11 +108,9 @@ module.exports = {
             .waitForElementVisible('#Subjects-Computer-Science')
             .click('#Subjects-Computer-Science')
             .expect.element('#Topics-dropdown').text.to.equal('Overall')
-        browser.end()
     },
     'Check filtering by topic': function (browser) {
         browser
-            .init()
             .waitForElementVisible('#reset-button', 20000)
             .click('#reset-button')
             .pause(1000)
@@ -127,11 +129,9 @@ module.exports = {
             })
             .expect.element('#ABCDEF').to.be.present
         browser.expect.element('#GHIJKL').to.not.be.present
-        browser.end()
     },
     'Check filtering by subject': function (browser) {
         browser
-            .init()
             .waitForElementVisible('#reset-button', 20000)
             .click('#reset-button')
             .pause(1000)
