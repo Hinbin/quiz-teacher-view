@@ -1,16 +1,18 @@
 import React from 'react'
-import { Table, Row, Button } from 'reactstrap'
+import { Table, Row, Button, FormGroup } from 'reactstrap'
 
 import LiveLeaderboardStore from '../Stores/LiveLeaderboardStore'
 import Entry from './LiveLeaderboard/Entry'
 import Filter from './LiveLeaderboard/Filter'
 import * as LiveLeaderboardActions from '../Actions/LiveLeaderboardActions'
+import withAuthorization from './withAuthorization'
+import * as auth from '../Constants/auth'
 
-export default class LiveLeaderboard extends React.Component {
+class LiveLeaderboard extends React.Component {
     constructor () {
         super()
         this.state = {
-            leaderboard: LiveLeaderboardStore.getAll(),
+            leaderboard: LiveLeaderboardStore.getCurrentLeaderboard(),
             filters: LiveLeaderboardStore.getFilters(),
             currentFilters: LiveLeaderboardStore.getCurrentFilters()
         }
@@ -28,7 +30,7 @@ export default class LiveLeaderboard extends React.Component {
 
     getLeaderboard () {
         this.setState({
-            leaderboard: LiveLeaderboardStore.getAll(),
+            leaderboard: LiveLeaderboardStore.getCurrentLeaderboard(),
             filters: LiveLeaderboardStore.getFilters(),
             currentFilters: LiveLeaderboardStore.getCurrentFilters()
         })
@@ -36,19 +38,47 @@ export default class LiveLeaderboard extends React.Component {
 
     selectFilter (option, name) {
         const oldPath = LiveLeaderboardStore.leaderboardPath.slice()
-        LiveLeaderboardActions.setFilter(option, name)
-
-        if (name === 'Subjects' || name === 'Topics') {
-            LiveLeaderboardActions.loadLeaderboard(LiveLeaderboardStore.leaderboardPath, oldPath)
-        }
+        LiveLeaderboardActions.setFilter(option, name, oldPath)
     }
 
     resetLeaderboard () {
         LiveLeaderboardActions.resetLeaderboard(LiveLeaderboardStore.leaderboardPath)
     }
 
+    // Converts the leaderboard object into a sorted array, sorted by score.
+    sortLeaderboard () {
+        // Build the array to be sorted that will contain all the leaderboard information
+        let sortedLeaderboard = []
+        const leaderboard = this.state.leaderboard
+        for (var key in leaderboard) {
+            if (leaderboard.hasOwnProperty(key)) {
+                if (this.checkFilters(leaderboard[key])) {
+                    sortedLeaderboard.push(leaderboard[key])
+                }
+            }
+        }
+
+        sortedLeaderboard.sort((a, b) => b.score - a.score)
+
+        for (var i in sortedLeaderboard) {
+            sortedLeaderboard[i].position = parseInt(i, 10) + 1
+        }
+        return sortedLeaderboard
+    }
+
+    checkFilters (entry) {
+        const filters = this.state.currentFilters
+        for (let i in filters) {
+            let filter = filters[i]
+            if (filter.name === 'Schools' && filter.option !== 'All' && entry.school !== filter.option) return false
+            if ((filter.name === 'Subjects' || filter.name === 'Topics') && !entry.path.includes(filter.option)) return false
+        }
+        return true
+    }
+
     render () {
-        const { leaderboard, filters, currentFilters } = this.state
+        const { filters, currentFilters } = this.state
+        const leaderboard = this.sortLeaderboard()
 
         // Map every entry in the current leaderboard array into an entry component
         const Entries = leaderboard.map((entry) => {
@@ -80,9 +110,11 @@ export default class LiveLeaderboard extends React.Component {
                 <Row className='page-header'>
                     <h1>Live Leaderboard</h1>
                 </Row>
-                <Row className='d-flex justify-content-around filter-block'>
+                <Row className='form-row align-items-center d-flex justify-content-around'>
                     {Filters}
-                    <Button onClick={() => this.resetLeaderboard()}>Reset</Button>
+                    <FormGroup>
+                        <Button id='reset-button' onClick={() => this.resetLeaderboard()}>Reset</Button>
+                    </FormGroup>
                 </Row>
                 <Row>
                     <Table>
@@ -103,3 +135,9 @@ export default class LiveLeaderboard extends React.Component {
         )
     }
 }
+
+const authCondition = (authUser) => {
+    return (!!authUser && auth.authDomain(authUser.email))
+}
+
+export default withAuthorization(authCondition)(LiveLeaderboard)

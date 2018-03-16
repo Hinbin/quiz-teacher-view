@@ -12,7 +12,8 @@ module.exports = {
                 globals.loadDatabase(filterDB).then(done())
             })
             .init()
-            .waitForElementVisible('h1', 20000)
+            .waitForElementVisible('#reset-button', 20000)
+            .click('#reset-button')
             .pause(1000)
     },
     'Check all users are added at start': function (browser) {
@@ -42,8 +43,9 @@ module.exports = {
     'Check points are added after filter select': function (browser) {
         browser
             .init()
-            .waitForElementVisible('h1', 20000)
-            .pause(2000)
+            .waitForElementVisible('#reset-button', 20000)
+            .click('#reset-button')
+            .pause(1000)
             .perform((done) => {
                 globals.addPoints(['ABCDEF', 'GHIJKL']).then(done())
             })
@@ -60,9 +62,12 @@ module.exports = {
         browser.expect.element('#GHIJKL').to.be.present
         browser.end()
     },
-    'Check points are are not added for different subject': function (browser) {
+    'Check points are are not added for different subjects': function (browser) {
         browser
             .init()
+            .waitForElementVisible('#reset-button', 20000)
+            .click('#reset-button')
+            .pause(1000)
             .waitForElementVisible('#Subjects-dropdown', 20000)
             .click('#Subjects-dropdown')
             .waitForElementVisible('#Subjects-History')
@@ -81,6 +86,9 @@ module.exports = {
     'Check that topic is overall by default on new subject': function (browser) {
         browser
             .init()
+            .waitForElementVisible('#reset-button', 20000)
+            .click('#reset-button')
+            .pause(1000)
             .waitForElementVisible('#Subjects-dropdown', 20000)
             .click('#Subjects-dropdown')
             .waitForElementVisible('#Subjects-Computer-Science')
@@ -101,6 +109,9 @@ module.exports = {
     'Check filtering by topic': function (browser) {
         browser
             .init()
+            .waitForElementVisible('#reset-button', 20000)
+            .click('#reset-button')
+            .pause(1000)
             .waitForElementVisible('#Subjects-dropdown', 20000)
             .click('#Subjects-dropdown')
             .waitForElementVisible('#Subjects-Computer-Science')
@@ -120,6 +131,10 @@ module.exports = {
     },
     'Check filtering by subject': function (browser) {
         browser
+            .init()
+            .waitForElementVisible('#reset-button', 20000)
+            .click('#reset-button')
+            .pause(1000)
             .init()
             .waitForElementVisible('#Subjects-dropdown', 20000)
             .click('#Subjects-dropdown')

@@ -23,6 +23,8 @@ if (process.env.NODE_ENV === 'production') {
     }
 }
 
-var fire = firebase.initializeApp(config)
+if (!firebase.apps.length) {
+    firebase.initializeApp(config)
+}
 
-export default fire
+export default firebase

@@ -11,7 +11,8 @@ module.exports = {
                 globals.setupDatabase().then(done())
             })
             .init()
-            .waitForElementVisible('h1', 20000)
+            .waitForElementVisible('#reset-button', 20000)
+            .click('#reset-button')
             .pause(1000)
     },
     'Check all users appear': (browser) => {

@@ -28,6 +28,7 @@
         },
         "desiredCapabilities": {
           "browserName": "chrome",
+          "webStorageEnabled" : true,
           "javascriptEnabled": true,
           "acceptSslCerts": true
         }

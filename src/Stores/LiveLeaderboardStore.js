@@ -8,7 +8,6 @@ class LiveLeaderboardStore extends EventEmitter {
         this.leaderboardPath = ['Computer Science', 'Overall']
         this.initialLeaderboard = {}
         this.currentLeaderboard = {}
-        this.leaderboard = []
         this.lastChanged = ''
         this.currentFilters = []
         this.filters = []
@@ -25,16 +24,39 @@ class LiveLeaderboardStore extends EventEmitter {
         // Push this new filter onto the array
         this.currentFilters.push(value)
 
-        if (value.name === 'Schools') {
-            // Sort the leaderboard and redraw it
-            this.sortLeaderboard()
-            this.emit('change')
-        } else if (value.name === 'Subjects') {
+        if (value.name === 'Subjects') {
             this.leaderboardPath[0] = value.option
             this.leaderboardPath[1] = 'Overall'
+            this.currentLeaderboard = {}
+            this.changeTopics(value.option)
         } else if (value.name === 'Topics') {
             this.leaderboardPath[1] = value.option
+            this.currentLeaderboard = {}
         }
+        this.emit('change')
+    }
+
+    changeTopics (subject) {
+        let topicOptions = []
+        const subjectBoard = this.initialLeaderboard[subject]
+        if (subjectBoard === null) return
+        for (let key in subjectBoard) {
+            topicOptions.push(key)
+        }
+
+        this.filters[2] = {
+            name: 'Topics',
+            options: topicOptions
+        }
+
+        this.leaderboardFilterChange({
+            name: 'Topics',
+            option: 'Overall'
+        })
+    }
+
+    getCurrentLeaderboard () {
+        return this.currentLeaderboard
     }
 
     getFilters () {
@@ -48,7 +70,6 @@ class LiveLeaderboardStore extends EventEmitter {
     loadLeaderboard (newLeaderboard) {
         this.initialLeaderboard = newLeaderboard
         this.currentLeaderboard = {}
-        this.sortLeaderboard()
         this.emit('change')
     }
 
@@ -80,7 +101,6 @@ class LiveLeaderboardStore extends EventEmitter {
         this.lastChanged = uid
         this.currentLeaderboard[uid].lastChanged = true
 
-        this.sortLeaderboard(uid)
         this.emit('change')
 
         // Save the current leaderboard into local storage for retrival later
@@ -103,46 +123,16 @@ class LiveLeaderboardStore extends EventEmitter {
         // Calculate the difference between the score when the leaderboard was loaded, and the score given
         // in the change
         const initialScore = this.initialLeaderboard[path[0]][path[1]][uid]
-        const liveScore = score - initialScore
-        return liveScore
-    }
-
-    // Converts the leaderboard object into a sorted array, sorted by score.
-    sortLeaderboard () {
-        // Build the array to be sorted that will contain all the leaderboard information
-        var sortable = []
-        for (var key in this.currentLeaderboard) {
-            if (this.currentLeaderboard.hasOwnProperty(key)) {
-                if (this.checkFilters(this.currentLeaderboard[key])) {
-                    sortable.push(this.currentLeaderboard[key])
-                }
-            }
+        if (initialScore === undefined) {
+            return score
+        } else {
+            const liveScore = score - initialScore
+            return liveScore
         }
-
-        sortable.sort((a, b) => b.score - a.score)
-
-        for (var i in sortable) {
-            sortable[i].position = parseInt(i, 10) + 1
-        }
-        this.leaderboard = sortable
-    }
-
-    getAll () {
-        return (this.leaderboard)
-    }
-
-    checkFilters (entry) {
-        let filters = this.currentFilters
-        for (let i in filters) {
-            let filter = filters[i]
-            if (filter.name === 'Schools' && filter.option !== 'All' && entry.school !== filter.option) return false
-        }
-        return true
     }
 
     leaderboardRemove (uid) {
         delete this.currentLeaderboard[uid]
-        this.sortLeaderboard()
         this.emit('change')
     }
 
