@@ -1,6 +1,5 @@
 import React from 'react'
 import firebase from 'firebase'
-import {Button} from 'reactstrap'
 import PropTypes from 'prop-types'
 
 import * as routes from '../Constants/routes'
@@ -12,7 +11,8 @@ import {
     NavbarToggler,
     NavItem,
     NavLink,
-    Collapse
+    Collapse,
+    Button
 } from 'reactstrap'
 
 export default class TopNav extends React.Component {
@@ -34,27 +34,27 @@ export default class TopNav extends React.Component {
         firebase.auth().signOut()
     }
 
-    navbarLoggedIn() {
+    navbarLoggedIn () {
         return (
             <Navbar dark expand='md'>
-            <NavbarBrand href='/'>Quiz Teacher View</NavbarBrand>
-            <NavbarToggler onClick={this.toggle} />
-            <Collapse isOpen={this.state.isOpen} navbar>
-                <Nav className='mr-auto' navbar>
-                    <NavItem>
-                        <NavLink href={routes.LEADERBOARD}>Live Leaderboard</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink href={routes.QUESTION_ANALYSIS}>Question Analysis</NavLink>
-                    </NavItem>
-                </Nav>
-            </Collapse>
-            <Button className='mr-sm-2' onClick={() => this.signOut()}>Sign Out</Button>
+                <NavbarBrand href='/'>Quiz Teacher View</NavbarBrand>
+                <NavbarToggler onClick={this.toggle} />
+                <Collapse isOpen={this.state.isOpen} navbar>
+                    <Nav className='mr-auto' navbar>
+                        <NavItem>
+                            <NavLink href={routes.LEADERBOARD}>Live Leaderboard</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href={routes.QUESTION_ANALYSIS}>Question Analysis</NavLink>
+                        </NavItem>
+                    </Nav>
+                </Collapse>
+                <Button className='mr-sm-2' onClick={() => this.signOut()}>Sign Out</Button>
             </Navbar>
         )
     }
 
-    navbarLoggedOut() {
+    navbarLoggedOut () {
         return (
             <Navbar dark expand='md'>
                 <NavbarBrand href='/'>Quiz Teacher View</NavbarBrand>
@@ -63,9 +63,9 @@ export default class TopNav extends React.Component {
     }
 
     render () {
-        return (  
+        return (
             this.context.authUser
-                ? this.navbarLoggedIn() 
+                ? this.navbarLoggedIn()
                 : this.navbarLoggedOut()
         )
     }

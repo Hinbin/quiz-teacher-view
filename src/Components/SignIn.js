@@ -8,7 +8,6 @@ import * as auth from '../Constants/auth'
 import GoogleButton from 'react-google-button'
 
 class SignIn extends React.Component {
-
     componentWillMount () {
         firebase.auth().onAuthStateChanged((authUser) => {
             this.checkDomain(authUser)
@@ -27,42 +26,41 @@ class SignIn extends React.Component {
 
     handleSignIn () {
         let provider = new firebase.auth.GoogleAuthProvider()
-    
+
         if (this.context.authUser) {
             provider.setCustomParameters({
                 prompt: 'select_account'
-              });
+            })
         }
 
         firebase.auth().signInWithRedirect(provider)
-
     }
 
-    SignInNormal() {
+    SignInNormal () {
         return (
-        <div className='py-4 row justify-content-center'>               
-            <GoogleButton onClick={() => this.handleSignIn()}>Sign In</GoogleButton>
-        </div>
+            <div className='py-4 row justify-content-center'>
+                <GoogleButton id='sign-in-button' onClick={() => this.handleSignIn()}>Sign In</GoogleButton>
+            </div>
         )
     }
 
-    SignInWarning() {
+    SignInWarning () {
         return (
             <div>
-                <div className='py-4 row justify-content-center'>    
-                    <p>Please ensure you sign in with your Outwood.com e-mail</p> 
+                <div className='py-4 row justify-content-center'>
+                    <p>Please ensure you sign in with your Outwood.com e-mail</p>
                 </div>
-                <div className='py-4 row justify-content-center'>    
-                    <GoogleButton onClick={() => this.handleSignIn()}>Sign In</GoogleButton>
+                <div className='py-4 row justify-content-center'>
+                    <GoogleButton id='sign-in-button' onClick={() => this.handleSignIn()}>Sign In</GoogleButton>
+                </div>
             </div>
-        </div>
         )
     }
 
     render () {
         const user = this.context.lastUser
         return (
-            user && !auth.authDomain (user.email)
+            user && !auth.authDomain(user.email)
                 ? this.SignInWarning()
                 : this.SignInNormal()
         )
@@ -72,6 +70,10 @@ class SignIn extends React.Component {
 SignIn.contextTypes = {
     authUser: PropTypes.object,
     lastUser: PropTypes.object
+}
+
+SignIn.propTypes = {
+    history: PropTypes.object
 }
 
 export default SignIn
