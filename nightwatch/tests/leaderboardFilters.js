@@ -22,10 +22,9 @@ module.exports = {
             .perform((done) => {
                 globals.loadDatabase(filterDB).then(done())
             })
-            .init()
             .waitForElementVisible('#reset-button', 20000)
-            .click('#reset-button')
-            .pause(1000)
+
+        leaderboard.reset()
     },
     'Check all users are added at start': function (browser) {
         browser
@@ -37,31 +36,26 @@ module.exports = {
         browser.expect.element('#GHIJKL-score').text.to.equal('1')
     },
     'Check filter by school': function (browser) {
-        browser
-            .click('#Schools-dropdown')
-            .waitForElementVisible('#Schools-Outwood-Grange')
-            .click('#Schools-Outwood-Grange')
-            .expect.element('#ABCDEF').to.not.be.present
-        browser.expect.element('#GHIJKL').to.be.present
-        browser
-            .click('#Schools-dropdown')
-            .waitForElementVisible('#Schools-Test-School')
-            .click('#Schools-Test-School')
-            .expect.element('#GHIJKL').to.not.be.present
-        browser.expect.element('#ABCDEF').to.be.present
+        let leaderboard = browser.page.leaderboard()
+        leaderboard.changeFilter('@schoolFilter', 'Outwood Grange')
+        leaderboard.expect.element('#ABCDEF').to.not.be.present
+        leaderboard.expect.element('#GHIJKL').to.be.present
+        leaderboard.changeFilter('@schoolFilter', 'Test School')
+        leaderboard.expect.element('#GHIJKL').to.not.be.present
+        leaderboard.expect.element('#ABCDEF').to.be.present
     },
     'Check points are added after filter select': function (browser) {
-        browser.waitForElementVisible('#reset-button', 20000)
-            .click('#reset-button')
-            .pause(1000)
+        let leaderboard = browser.page.leaderboard()
+        leaderboard.changeFilter('@schoolFilter', 'All')
+        leaderboard.reset()
+
+        browser
             .perform((done) => {
                 globals.addPoints(['ABCDEF', 'GHIJKL']).then(done())
             })
             .waitForElementVisible('#ABCDEF')
-            .click('#Subjects-dropdown')
-            .waitForElementVisible('#Subjects-Computer-Science')
-            .click('#Subjects-Computer-Science')
-            .expect.element('#GHIJKL').to.not.be.present
+        leaderboard.changeFilter('@subjectFilter', 'Computer Science')
+            .expect.element('#GHIJKL').to.be.present
         browser
             .perform((done) => {
                 globals.addPoints(['ABCDEF', 'GHIJKL']).then(done())
@@ -70,14 +64,10 @@ module.exports = {
         browser.expect.element('#GHIJKL').to.be.present
     },
     'Check points are are not added for different subjects': function (browser) {
+        let leaderboard = browser.page.leaderboard()
+        leaderboard.reset()
+        leaderboard.changeFilter('@subjectFilter', 'History')
         browser
-            .waitForElementVisible('#reset-button', 20000)
-            .click('#reset-button')
-            .pause(1000)
-            .waitForElementVisible('#Subjects-dropdown', 20000)
-            .click('#Subjects-dropdown')
-            .waitForElementVisible('#Subjects-History')
-            .click('#Subjects-History')
             .perform((done) => {
                 globals.addPoint('ABCDEF').then(done())
             })
@@ -89,38 +79,21 @@ module.exports = {
             .expect.element('#GHIJKL').to.be.present
     },
     'Check that topic is overall by default on new subject': function (browser) {
-        browser
-            .waitForElementVisible('#reset-button', 20000)
-            .click('#reset-button')
-            .pause(1000)
-            .waitForElementVisible('#Subjects-dropdown', 20000)
-            .click('#Subjects-dropdown')
-            .waitForElementVisible('#Subjects-Computer-Science')
-            .click('#Subjects-Computer-Science')
+        let leaderboard = browser.page.leaderboard()
+        leaderboard.reset()
+        leaderboard.changeFilter('@subjectFilter', 'Computer Science')
             .expect.element('#Topics-dropdown').text.to.equal('Overall')
-        browser
-            .click('#Topics-dropdown')
-            .waitForElementVisible('#Topics-System-Architecture')
-            .click('#Topics-System-Architecture')
+        leaderboard.changeFilter('@topicFilter', 'System Architecture')
             .expect.element('#Topics-dropdown').text.to.equal('System Architecture')
-        browser
-            .click('#Subjects-dropdown')
-            .waitForElementVisible('#Subjects-Computer-Science')
-            .click('#Subjects-Computer-Science')
+        leaderboard.changeFilter('@subjectFilter', 'Computer Science')
             .expect.element('#Topics-dropdown').text.to.equal('Overall')
     },
     'Check filtering by topic': function (browser) {
+        let leaderboard = browser.page.leaderboard()
+        leaderboard.reset()
+        leaderboard.changeFilter('@subjectFilter', 'Computer Science')
+        leaderboard.changeFilter('@topicFilter', 'System Architecture')
         browser
-            .waitForElementVisible('#reset-button', 20000)
-            .click('#reset-button')
-            .pause(1000)
-            .waitForElementVisible('#Subjects-dropdown', 20000)
-            .click('#Subjects-dropdown')
-            .waitForElementVisible('#Subjects-Computer-Science')
-            .click('#Subjects-Computer-Science')
-            .click('#Topics-dropdown')
-            .waitForElementVisible('#Topics-System-Architecture')
-            .click('#Topics-System-Architecture')
             .perform((done) => {
                 globals.addPoint('ABCDEF', 'weeklyLeaderboard/Computer Science/System Architecture/').then(done())
             })
@@ -131,15 +104,10 @@ module.exports = {
         browser.expect.element('#GHIJKL').to.not.be.present
     },
     'Check filtering by subject': function (browser) {
+        let leaderboard = browser.page.leaderboard()
+        leaderboard.reset()
+        leaderboard.changeFilter('@subjectFilter', 'Computer Science')
         browser
-            .waitForElementVisible('#reset-button', 20000)
-            .click('#reset-button')
-            .pause(1000)
-            .init()
-            .waitForElementVisible('#Subjects-dropdown', 20000)
-            .click('#Subjects-dropdown')
-            .waitForElementVisible('#Subjects-Computer-Science')
-            .click('#Subjects-Computer-Science')
             .perform((done) => {
                 globals.addPoint('ABCDEF', 'weeklyLeaderboard/History/Overall/').then(done())
             })

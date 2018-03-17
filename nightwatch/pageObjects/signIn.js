@@ -1,4 +1,4 @@
-var loginCommands = {
+var signInCommands = {
     simpleLogin: function (username, password) {
         return this.waitForElementPresent('@signInButton')
             .click('@signInButton')
@@ -13,7 +13,7 @@ var loginCommands = {
 }
 
 module.exports = {
-    commands: [loginCommands],
+    commands: [signInCommands],
 
     url: function () {
         return this.api.launchUrl + '/signin'
