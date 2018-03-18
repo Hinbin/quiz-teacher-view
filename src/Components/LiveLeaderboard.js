@@ -3,7 +3,7 @@ import { Table, Row, Button, FormGroup } from 'reactstrap'
 
 import LiveLeaderboardStore from '../Stores/LiveLeaderboardStore'
 import Entry from './LiveLeaderboard/Entry'
-import Filter from './LiveLeaderboard/Filter'
+import Filter from './Filter'
 import * as LiveLeaderboardActions from '../Actions/LiveLeaderboardActions'
 import withAuthorization from './withAuthorization'
 import * as auth from '../Constants/auth'

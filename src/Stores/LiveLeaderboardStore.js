@@ -142,12 +142,11 @@ class LiveLeaderboardStore extends EventEmitter {
     }
 
     handleActions (action) {
-        console.log(action)
         switch (action.type) {
         case 'LOAD_LEADERBOARD' : {
             break
         }
-        case 'LOAD_LEADERBOARD_FILTERS' : {
+        case 'LOAD_FILTERS' : {
             this.loadLeaderboardFilters(action.value)
             break
         }

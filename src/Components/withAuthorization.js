@@ -11,8 +11,6 @@ const withAuthorization = (authCondition) => (Component) => {
             fire.auth().onAuthStateChanged(authUser => {
                 if (!authCondition(authUser)) {
                     this.props.history.push(routes.SIGN_IN)
-                } else {
-                    this.props.history.push(routes.LEADERBOARD)
                 }
             })
         }
