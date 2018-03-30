@@ -2,8 +2,19 @@ import firebase from 'firebase'
 import globals from '../globals'
 import filterDB from '../databases/filterDatabase.json'
 
+import * as loginDetails from '../loginDetails'
+
 module.exports = {
-    'wait for page to load': function (browser) {
+    'See if page loads': function (browser) {
+        var login = browser.page.signIn()
+        var leaderboard = browser.page.leaderboard()
+
+        login
+            .navigate()
+            .simpleLogin(loginDetails.validUsername, loginDetails.validPassword)
+
+        leaderboard.navigate()
+
         browser
             .perform((done) => {
                 firebase.database().ref('/').set(null).then(done())

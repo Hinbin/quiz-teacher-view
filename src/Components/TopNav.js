@@ -49,7 +49,7 @@ export default class TopNav extends React.Component {
                         </NavItem>
                     </Nav>
                 </Collapse>
-                <Button className='mr-sm-2' onClick={() => this.signOut()}>Sign Out</Button>
+                <Button className='mr-sm-2' id='sign-out-button' onClick={() => this.signOut()}>Sign Out</Button>
             </Navbar>
         )
     }
