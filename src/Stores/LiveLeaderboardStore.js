@@ -9,67 +9,20 @@ class LiveLeaderboardStore extends EventEmitter {
         this.initialLeaderboard = {}
         this.currentLeaderboard = {}
         this.lastChanged = ''
-        this.currentFilters = []
-        this.filters = []
-    }
-
-    leaderboardFilterChange (value) {
-        // Remove any existing filters with the same name from the array
-        this.currentFilters = this.currentFilters.filter((filter) => {
-            if (filter.name !== value.name) {
-                return true
-            } else return false
-        })
-
-        // Push this new filter onto the array
-        this.currentFilters.push(value)
-
-        if (value.name === 'Subjects') {
-            this.leaderboardPath[0] = value.option
-            this.leaderboardPath[1] = 'Overall'
-            this.currentLeaderboard = {}
-            this.changeTopics(value.option)
-        } else if (value.name === 'Topics') {
-            this.leaderboardPath[1] = value.option
-            this.currentLeaderboard = {}
-        }
-        this.emit('change')
-    }
-
-    changeTopics (subject) {
-        let topicOptions = []
-        const subjectBoard = this.initialLeaderboard[subject]
-        if (subjectBoard === null) return
-        for (let key in subjectBoard) {
-            topicOptions.push(key)
-        }
-
-        this.filters[2] = {
-            name: 'Topics',
-            options: topicOptions
-        }
-
-        this.leaderboardFilterChange({
-            name: 'Topics',
-            option: 'Overall'
-        })
     }
 
     getCurrentLeaderboard () {
         return this.currentLeaderboard
     }
 
-    getFilters () {
-        return this.filters
-    }
-
-    getCurrentFilters () {
-        return this.currentFilters
-    }
-
     loadLeaderboard (newLeaderboard) {
         this.initialLeaderboard = newLeaderboard
         this.currentLeaderboard = {}
+        this.emit('change')
+    }
+
+    leaderboardFilterChange (value) {
+        if (value.name !== 'Schools') this.currentLeaderboard = {}
         this.emit('change')
     }
 
@@ -136,21 +89,13 @@ class LiveLeaderboardStore extends EventEmitter {
         this.emit('change')
     }
 
-    loadLeaderboardFilters (value) {
-        this.filters = value
-        this.emit('change')
-    }
-
     handleActions (action) {
+        console.log(action)
         switch (action.type) {
         case 'LOAD_LEADERBOARD' : {
             break
         }
-        case 'LOAD_FILTERS' : {
-            this.loadLeaderboardFilters(action.value)
-            break
-        }
-        case 'LOAD_LEADERBOARD_COMPLETE': {
+        case 'LOAD_LEADERBOARD_INITIAL_SCORES': {
             this.loadLeaderboard(action.value)
             break
         }
@@ -164,7 +109,7 @@ class LiveLeaderboardStore extends EventEmitter {
             this.leaderboardRemove(action.value)
             break
         }
-        case 'LEADERBOARD_FILTER_CHANGE':
+        case 'FILTER_CHANGE':
         {
             this.leaderboardFilterChange(action.value)
             break

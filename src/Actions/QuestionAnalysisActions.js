@@ -1,8 +1,6 @@
 import dispatcher from '../dispatcher'
 import firebase from '../fire'
 
-import {loadFilters} from './FilterActions'
-
 const DAMPING_VALUE = 4
 
 // Live analysis?
@@ -11,9 +9,10 @@ export function loadQuestionAnalysis () {
     firebase.database().ref('/weeklyLeaderboard/').once('value').then((leaderboardSnapshot) => {
         return leaderboardSnapshot
     }).then((leaderboardSnapshot) => {
-        loadFilters(leaderboardSnapshot, 'Computer Science')
-    }).then(() => {
-        dispatcher.dispatch({type: 'LOAD_LEADERBOARD_FINISHED'})
+        dispatcher.dispatch({
+            type: 'LOAD_WEEKLY_SNAPSHOT',
+            value: leaderboardSnapshot.val()
+        })
     })
 }
 

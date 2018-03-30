@@ -1,8 +1,6 @@
 import dispatcher from '../dispatcher'
 import firebase from '../fire'
 
-import {loadFilters} from './FilterActions'
-
 export function loadLeaderboard (path, oldPath) {
     dispatcher.dispatch({
         type: 'LOAD_LEADERBOARD',
@@ -12,7 +10,10 @@ export function loadLeaderboard (path, oldPath) {
         return leaderboardSnapshot
     }).then((leaderboardSnapshot) => {
         loadInitialScores(leaderboardSnapshot)
-        loadFilters(leaderboardSnapshot, path[0])
+        dispatcher.dispatch({
+            type: 'LOAD_WEEKLY_SNAPSHOT',
+            value: leaderboardSnapshot.val()
+        })
     }).then(() => {
         dispatcher.dispatch({type: 'LOAD_LEADERBOARD_FINISHED'})
     })
@@ -62,13 +63,13 @@ function loadInitialScores (leaderboardSnapshot) {
 
         // Now we have all of the results from the DB, make sure we sort it.  Otherwise late results are places first.
         dispatcher.dispatch({
-            type: 'LOAD_LEADERBOARD_COMPLETE',
+            type: 'LOAD_LEADERBOARD_INITIAL_SCORES',
             value: leaderboardObject
         })
     } else {
         leaderboardObject = initialLeaderboard
         dispatcher.dispatch({
-            type: 'LOAD_LEADERBOARD_COMPLETE',
+            type: 'LOAD_LEADERBOARD_INITIAL_SCORES',
             value: leaderboardObject
         })
     }
