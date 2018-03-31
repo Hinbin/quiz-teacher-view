@@ -5,20 +5,6 @@ export function loadLeaderboard (path, oldPath) {
     dispatcher.dispatch({
         type: 'LOAD_LEADERBOARD',
         value: path})
-
-    firebase.database().ref('/weeklyLeaderboard/').once('value').then((leaderboardSnapshot) => {
-        return leaderboardSnapshot
-    }).then((leaderboardSnapshot) => {
-        loadInitialScores(leaderboardSnapshot)
-        dispatcher.dispatch({
-            type: 'LOAD_WEEKLY_SNAPSHOT',
-            value: leaderboardSnapshot.val()
-        })
-    }).then(() => {
-        dispatcher.dispatch({type: 'LOAD_LEADERBOARD_FINISHED'})
-    })
-
-    listenToLeaderboard(path, oldPath)
 }
 
 export function resetLeaderboard (path, oldpath) {
@@ -27,30 +13,6 @@ export function resetLeaderboard (path, oldpath) {
         type: 'RESET_LEADERBOARD'
     })
     loadLeaderboard(path, oldpath)
-}
-
-export function setFilter (option, name, oldPath) {
-    if (name === 'Subjects') {
-        const path = [option, 'Overall']
-        listenToLeaderboard(path, oldPath)
-        // If we've changed the subject, we need to reset the topic as well.
-        dispatcher.dispatch({
-            type: 'LEADERBOARD_FILTER_CHANGE',
-            value: {
-                option: 'Overall',
-                name: 'Topics'
-            }})
-    } else if (name === 'Topics') {
-        const path = [oldPath[0], option]
-        listenToLeaderboard(path, oldPath)
-    }
-
-    dispatcher.dispatch({
-        type: 'LEADERBOARD_FILTER_CHANGE',
-        value: {
-            option: option,
-            name: name
-        }})
 }
 
 function loadInitialScores (leaderboardSnapshot) {

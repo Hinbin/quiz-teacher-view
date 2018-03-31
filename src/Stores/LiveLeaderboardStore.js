@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events'
+import firebase from '../fire'
 
 import dispatcher from '../dispatcher'
 
@@ -9,16 +10,57 @@ class LiveLeaderboardStore extends EventEmitter {
         this.initialLeaderboard = {}
         this.currentLeaderboard = {}
         this.lastChanged = ''
+        this.path = ['Computer Science', 'Overall']
+        this.oldPath = []
+    }
+
+    listenToLeaderboard (path, oldPath) {
+        // If we have an old leaderboard we have been listening to, stop listening to it
+        if (oldPath !== undefined) {
+            oldPath = oldPath.join('/')
+            firebase.database().ref('weeklyLeaderboard/' + oldPath).off('child_changed')
+            firebase.database().ref('weeklyLeaderboard/' + oldPath).off('child_added')
+            firebase.database().ref('weeklyLeaderboard/' + oldPath).off('child_removed')
+        }
+
+        path = path.join('/')
+
+        // Attach listeners to the leaderboard we are interested in
+        firebase.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_changed', snapshot => {
+            this.leaderboardChange(snapshot)
+        })
+
+        firebase.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_added', snapshot => {
+            this.leaderboardChange(snapshot)
+        })
+
+        firebase.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_removed', snapshot => {
+            this.removeEntry(snapshot)
+        })
+    }    
+
+    loadLeaderboard () {
+        firebase.database().ref('/weeklyLeaderboard/').once('value').then((leaderboardSnapshot) => {
+            return leaderboardSnapshot
+        }).then((leaderboardSnapshot) => {
+            this.loadInitialScores(leaderboardSnapshot)
+            dispatcher.dispatch({
+                type: 'LOAD_WEEKLY_SNAPSHOT',
+                value: leaderboardSnapshot.val()
+            })
+        }).then(() => {
+            dispatcher.dispatch({type: 'LOAD_LEADERBOARD_FINISHED'})
+        })
+
+        this.listenToLeaderboard(path, oldPath)
+
+        this.initialLeaderboard = newLeaderboard
+        this.currentLeaderboard = {}
+        this.emit('change')
     }
 
     getCurrentLeaderboard () {
         return this.currentLeaderboard
-    }
-
-    loadLeaderboard (newLeaderboard) {
-        this.initialLeaderboard = newLeaderboard
-        this.currentLeaderboard = {}
-        this.emit('change')
     }
 
     leaderboardFilterChange (value) {
@@ -93,20 +135,6 @@ class LiveLeaderboardStore extends EventEmitter {
         console.log(action)
         switch (action.type) {
         case 'LOAD_LEADERBOARD' : {
-            break
-        }
-        case 'LOAD_LEADERBOARD_INITIAL_SCORES': {
-            this.loadLeaderboard(action.value)
-            break
-        }
-        case 'LEADERBOARD_CHANGE':
-        {
-            this.leaderboardChange(action.value)
-            break
-        }
-        case 'LEADERBOARD_REMOVE':
-        {
-            this.leaderboardRemove(action.value)
             break
         }
         case 'FILTER_CHANGE':

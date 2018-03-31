@@ -67,5 +67,6 @@ export default class Filters extends React.Component {
 }
 
 Filters.propTypes = {
-    getFilters: PropTypes.func
+    getFilters: PropTypes.func,
+    selectFilter: PropTypes.func
 }

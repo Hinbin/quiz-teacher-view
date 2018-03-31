@@ -17,6 +17,7 @@ class LiveLeaderboard extends React.Component {
         }
         this.getLeaderboard = this.getLeaderboard.bind(this)
         this.getFilters = this.getFilters.bind(this)
+        this.selectFilter = this.selectFilter.bind(this)
         LiveLeaderboardActions.loadLeaderboard(LiveLeaderboardStore.leaderboardPath)
     }
 
@@ -92,7 +93,7 @@ class LiveLeaderboard extends React.Component {
                     <h1>Live Leaderboard</h1>
                 </Row>
                 <Row className='form-row align-items-center d-flex justify-content-around'>
-                    <Filters getFilters={this.getFilters} />
+                    <Filters getFilters={this.getFilters} selectFilter={this.selectFilter} />
                     <FormGroup>
                         <Button id='reset-button' onClick={() => this.resetLeaderboard()}>Reset</Button>
                     </FormGroup>
