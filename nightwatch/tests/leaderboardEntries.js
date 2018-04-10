@@ -27,8 +27,7 @@ module.exports = {
             })
             .init()
             .waitForElementVisible('#reset-button', 20000)
-            .click('#reset-button')
-            .pause(1000)
+        leaderboard.reset()
     },
     'See if score changes by one': (browser) => {
         browser

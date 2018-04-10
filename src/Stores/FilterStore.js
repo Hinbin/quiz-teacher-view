@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 
-import firebase from '../fire'
+import firebase from '../Constants/fire'
 
 import dispatcher from '../dispatcher'
 

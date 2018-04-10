@@ -1,4 +1,4 @@
-import firebase from '../fire'
+import firebase from '../Constants/fire'
 import React from 'react'
 import PropTypes from 'prop-types'
 

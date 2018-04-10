@@ -1,12 +1,12 @@
 import React from 'react'
 import {Row} from 'reactstrap'
 
-import withAuthorization from '../withAuthorization'
-import Filters from '../Filters/Filters'
-import * as QuestionAnalysisActions from '../../Actions/QuestionAnalysisActions'
-import QuestionAnalysisStore from '../../Stores/QuestionAnalysisStore'
+import withAuthorization from '../hoc/withAuthorization'
+import Filters from '../Components/Filters/Filters'
+import * as QuestionAnalysisActions from '../Actions/QuestionAnalysisActions'
+import QuestionAnalysisStore from '../Stores/QuestionAnalysisStore'
 
-import * as auth from '../../Constants/auth'
+import * as auth from '../Constants/auth'
 
 class QuestionAnalysis extends React.Component {
     constructor () {

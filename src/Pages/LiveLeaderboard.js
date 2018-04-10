@@ -2,10 +2,10 @@ import React from 'react'
 import { Table, Row, Button, FormGroup } from 'reactstrap'
 
 import LiveLeaderboardStore from '../Stores/LiveLeaderboardStore'
-import Entry from './LiveLeaderboard/Entry'
-import Filters from './Filters/Filters'
 import * as LiveLeaderboardActions from '../Actions/LiveLeaderboardActions'
-import withAuthorization from './withAuthorization'
+import Entry from '../Components/LiveLeaderboard/Entry'
+import Filters from '../Components/Filters/Filters'
+import withAuthorization from '../hoc/withAuthorization'
 import * as auth from '../Constants/auth'
 
 class LiveLeaderboard extends React.Component {

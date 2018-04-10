@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import firebase from '../fire'
+import firebase from '../Constants/fire'
 
 import dispatcher from '../dispatcher'
 
@@ -30,7 +30,7 @@ class LiveLeaderboardStore extends EventEmitter {
         })
 
         firebase.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_added', snapshot => {
-            this.leaderboardChange(snapshot)
+            this.leaderboardChange(snapshot, true)
         })
 
         firebase.database().ref('weeklyLeaderboard/' + path).orderByValue().on('child_removed', snapshot => {
@@ -107,12 +107,17 @@ class LiveLeaderboardStore extends EventEmitter {
         })
     }
 
-    leaderboardChange (snapshot) {
+    removeEntry (snapshot) {
         const uid = snapshot.key
-        // If this is the users first time in the weekly leaderboard,
-        // set their score to 0
-        if (this.initialLeaderboard[uid] === undefined) {
-            this.initialLeaderboard[uid] = 0
+        delete this.currentLeaderboard[uid]
+        this.emit('change')
+    }
+
+    leaderboardChange (snapshot, newEntry) {
+        const uid = snapshot.key
+
+        if (newEntry) {
+            this.initialLeaderboard[this.path[0]][this.path[1]][uid] = 0
         }
 
         this.getUserDetails(snapshot)
@@ -165,8 +170,6 @@ class LiveLeaderboardStore extends EventEmitter {
                 return liveScore
             }
         } catch (TypeError) {
-            // Catch if the path doesn't exist and return 0
-            console.error('Cannot find entry for', path[0], path[1], uid)
             return 0
         }
     }
@@ -184,6 +187,7 @@ class LiveLeaderboardStore extends EventEmitter {
             this.initialLeaderboard = lbData
             // Save the current leaderboard into local storage for retrival later
             localStorage.setItem('leaderboard', JSON.stringify(this.initialLeaderboard))
+            this.currentLeaderboard = {}
             this.emit('change')
         })
     }

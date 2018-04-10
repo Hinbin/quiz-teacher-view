@@ -1,5 +1,5 @@
 import dispatcher from '../dispatcher'
-import firebase from '../fire'
+import firebase from '../Constants/fire'
 
 const DAMPING_VALUE = 4
 
