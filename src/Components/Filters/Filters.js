@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FilterStore from '../../Stores/FilterStore'
-import * as FilterActions from '../../Actions/FilterActions'
 import Filter from './Filter'
 
 export default class Filters extends React.Component {
@@ -15,7 +14,6 @@ export default class Filters extends React.Component {
             currentFilters: FilterStore.getCurrentFilters()
         }
         this.getFilterStore = this.getFilterStore.bind(this)
-        FilterActions.loadFilters()
     }
 
     componentWillMount () {
@@ -46,7 +44,8 @@ export default class Filters extends React.Component {
         let filterArray = []
 
         // Display all filters that are currently defined.
-        filters.map((filter) => {
+        for (let i in filters) {
+            let filter = filters[i]
             let selected = currentFilters.filter((selectedFilter) => {
                 return selectedFilter.name === filter.name
             })[0]
@@ -58,7 +57,7 @@ export default class Filters extends React.Component {
                 selected = selected.option
             }
             filterArray.push(<Filter key={filter.name} selected={selected} {...filter} />)
-        })
+        }
 
         return (
             filterArray

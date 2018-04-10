@@ -21,7 +21,6 @@ export default class Filter extends React.Component {
 
     selectFilter (name, option) {
         FilterActions.setFilter(name, option)
-        this.props.selectFilter(name, option)
     }
 
     render () {
@@ -50,6 +49,5 @@ export default class Filter extends React.Component {
 Filter.propTypes = {
     selected: PropTypes.string,
     name: PropTypes.string,
-    options: PropTypes.array,
-    selectFilter: PropTypes.func
+    options: PropTypes.array
 }

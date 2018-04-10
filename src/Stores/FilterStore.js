@@ -1,19 +1,34 @@
 import { EventEmitter } from 'events'
 
+import firebase from '../fire'
+
 import dispatcher from '../dispatcher'
 
 class FilterStore extends EventEmitter {
     constructor () {
         super()
-        this.path = ['Computer Science', 'Overall']
         this.currentFilters = []
         this.filters = []
+        this.weeklyLeaderboard = {}
     }
 
     handleActions (action) {
         switch (action.type) {
-        case 'LOAD_SCHOOL_FILTER' : {
-            this.loadSchoolFilters(action.value)
+        case 'FILTER_RESET' : {
+            break
+        }
+        case 'FILTER_LOAD_SCHOOLS_ALL' : {
+            this.loadSchoolFilters(true)
+            break
+        }
+
+        case 'FILTER_LOAD_SCHOOLS' : {
+            this.loadSchoolFilters(false)
+            break
+        }
+
+        case 'FILTER_LOAD_SUBJECTS_TOPICS' : {
+            this.loadSubjects(action.value)
             break
         }
 
@@ -31,50 +46,84 @@ class FilterStore extends EventEmitter {
         }
     }
 
-    loadTopicsAndSubjects (value) {
-        let subjectArray = [this.path[0]]
-        let topicArray = [this.path[1]]
-        // Loop through our top level subjects and get the subject names
-        const subjects = value
-        for (let subject in subjects) {
-            if (!subjectArray.includes(subject)) subjectArray.push(subject)
+    getWeeklyLeaderboard () {
+        let db = firebase.database()
+        if (Object.keys(this.weeklyLeaderboard).length === 0) {
+            return db.ref('weeklyLeaderboard/').once('value').then((snapshot) => {
+                this.weeklyLeaderboard = snapshot.val()
+            })
+        } else {
+            return Promise.resolve()
         }
-
-        const topics = subjects[this.path[0]]
-
-        if (topics !== undefined) {
-            for (let topic in topics) {
-                if (!topicArray.includes(topic)) topicArray.push(topic)
-            }
-        }
-
-        this.filters.push(
-            {
-                name: 'Subjects',
-                options: subjectArray
-            },
-            {
-                name: 'Topics',
-                options: topicArray
-            }
-        )
-        this.emit('change')
     }
 
-    loadSchoolFilters (value) {
-    // Have to perform a deep copy of this array to modify it
-        let newFilters = JSON.parse(JSON.stringify(value))
-        // Add the 'All' option for schools
-        for (let i in newFilters) {
-            if (newFilters[i].name === 'Schools') {
-                let newArray = newFilters[i]
-                newArray.options = ['All', ...newArray.options]
-                newFilters[i] = newArray
+    loadSubjects (path) {
+        this.getWeeklyLeaderboard().then(() => {
+            let subjectArray = [path[0]]
+            let topicArray = [path[1]]
+            // Loop through our top level subjects and get the subject names
+            const subjects = this.weeklyLeaderboard
+            for (let subject in subjects) {
+                if (!subjectArray.includes(subject)) subjectArray.push(subject)
             }
-        }
 
-        this.filters.unshift(newFilters[0])
-        this.emit('change')
+            const topics = subjects[path[0]]
+
+            if (topics !== undefined) {
+                for (let topic in topics) {
+                    if (!topicArray.includes(topic)) topicArray.push(topic)
+                }
+            }
+
+            this.filters.push(
+                {
+                    name: 'Subjects',
+                    options: subjectArray
+                },
+                {
+                    name: 'Topics',
+                    options: topicArray
+                }
+            )
+
+            this.currentFilters.push(
+                {
+                    name: 'Subjects',
+                    option: path[0]
+                },
+                {
+                    name: 'Topics',
+                    option: path[1]
+                }
+            )
+
+            this.emit('change')
+        })
+    }
+
+    loadSchoolFilters (includeAllOption) {
+        const db = firebase.database()
+        db.ref('schools/').once('value').then((schoolSnapshot) => {
+            return schoolSnapshot
+        }).then((schoolSnapshot) => {
+            // Look through all the schools and then add them to the array.  Only add unique
+            // schools so we don't get duplicates
+            const schools = schoolSnapshot.val()
+            let schoolArray = []
+
+            if (includeAllOption) schoolArray.push('All')
+
+            for (let i in schools) {
+                let school = schools[i]
+                if (!schoolArray.includes(school)) schoolArray.push(school)
+            }
+
+            this.filters.unshift({
+                name: 'Schools',
+                options: schoolArray})
+
+            this.emit('change')
+        })
     }
 
     getFilters () {
@@ -97,31 +146,26 @@ class FilterStore extends EventEmitter {
         this.currentFilters.push(value)
 
         if (value.name === 'Subjects') {
-            this.path[0] = value.option
-            this.path[1] = 'Overall'
             this.changeTopics(value.option)
-        } else if (value.name === 'Topics') {
-            this.path[1] = value.option
         }
+
         this.emit('change')
     }
 
     changeTopics (subject) {
         let topicOptions = []
-        const subjectBoard = this.initialLeaderboard[subject]
+        const subjectBoard = this.weeklyLeaderboard[subject]
         if (subjectBoard === null) return
         for (let key in subjectBoard) {
             topicOptions.push(key)
         }
 
-        this.filters[2] = {
+        // Remove the "topics" filter
+        this.filters = this.filters.filter(filter => filter.name !== 'Topics')
+
+        this.filters.push({
             name: 'Topics',
             options: topicOptions
-        }
-
-        this.leaderboardFilterChange({
-            name: 'Topics',
-            option: 'Overall'
         })
     }
 }

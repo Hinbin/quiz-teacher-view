@@ -17,8 +17,8 @@ class LiveLeaderboard extends React.Component {
         }
         this.getLeaderboard = this.getLeaderboard.bind(this)
         this.getFilters = this.getFilters.bind(this)
-        this.selectFilter = this.selectFilter.bind(this)
-        LiveLeaderboardActions.loadLeaderboard(LiveLeaderboardStore.leaderboardPath)
+        LiveLeaderboardActions.loadLeaderboard(LiveLeaderboardStore.path)
+        LiveLeaderboardActions.loadFilters(LiveLeaderboardStore.getPath())
     }
 
     componentWillMount () {
@@ -33,11 +33,6 @@ class LiveLeaderboard extends React.Component {
         this.setState({
             leaderboard: LiveLeaderboardStore.getCurrentLeaderboard()
         })
-    }
-
-    selectFilter (option, name) {
-        const oldPath = LiveLeaderboardStore.leaderboardPath.slice()
-        LiveLeaderboardActions.setFilter(option, name, oldPath)
     }
 
     resetLeaderboard () {
@@ -93,7 +88,7 @@ class LiveLeaderboard extends React.Component {
                     <h1>Live Leaderboard</h1>
                 </Row>
                 <Row className='form-row align-items-center d-flex justify-content-around'>
-                    <Filters getFilters={this.getFilters} selectFilter={this.selectFilter} />
+                    <Filters getFilters={this.getFilters} />
                     <FormGroup>
                         <Button id='reset-button' onClick={() => this.resetLeaderboard()}>Reset</Button>
                     </FormGroup>

@@ -12,10 +12,10 @@ class QuestionAnalysis extends React.Component {
     constructor () {
         super()
         this.state = {
-            filters: QuestionAnalysisStore.getFilters(),
-            currentFilters: QuestionAnalysisStore.getCurrentFilters(),
-            questionAnalysis: QuestionAnalysisStore.getQuestionHistory()
+            questionAnalysis: QuestionAnalysisStore.getQuestionHistory(),
+            currentFilters: {}
         }
+        this.getFilters = this.getFilters.bind(this)
         this.getQuestionAnalysis = this.getQuestionAnalysis.bind(this)
         QuestionAnalysisActions.loadQuestionAnalysis()
     }
@@ -30,10 +30,12 @@ class QuestionAnalysis extends React.Component {
 
     getQuestionAnalysis () {
         this.setState({
-            filters: QuestionAnalysisStore.getFilters(),
-            currentFilters: QuestionAnalysisStore.getCurrentFilters(),
             questionHistory: QuestionAnalysisStore.getQuestionHistory()
         })
+    }
+
+    getFilters (filters) {
+        this.setState({currentFilters: filters})
     }
 
     render () {
@@ -43,7 +45,7 @@ class QuestionAnalysis extends React.Component {
                     <h1>Question Analysis</h1>
                 </Row>
                 <Row className='form-row align-items-center d-flex justify-content-around'>
-                    <Filters />
+                    <Filters getFilters={this.getFilters} />
                 </Row>
             </div>
         )
