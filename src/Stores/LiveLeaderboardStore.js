@@ -11,6 +11,7 @@ class LiveLeaderboardStore extends EventEmitter {
         this.lastChanged = ''
         this.path = ['Computer Science', 'Overall']
         this.oldPath = []
+        this.loading = true
     }
 
     listenToLeaderboard () {
@@ -42,12 +43,10 @@ class LiveLeaderboardStore extends EventEmitter {
         let initialLeaderboard = JSON.parse(localStorage.getItem('leaderboard'))
 
         if (initialLeaderboard === null) {
-            // Get the score, name, work out the position and then add the value to the scoreArray.
             return this.resetLeaderboard()
-
-            // Now we have all of the results from the DB, make sure we sort it.  Otherwise late results are places first.
         } else {
-            return Promise.resolve(initialLeaderboard)
+            this.initialLeaderboard = initialLeaderboard
+            return Promise.resolve()
         }
     }
 
@@ -56,12 +55,14 @@ class LiveLeaderboardStore extends EventEmitter {
         this.oldPath = paths.oldPath
 
         return this.loadInitialScores().then((initialLeaderboard) => {
-            this.initialLeaderboard = initialLeaderboard
             this.listenToLeaderboard(this.path, this.oldPath)
-
-            this.currentLeaderboard = {}
+            this.currentLeaderboard = {}            
             this.emit('change')
         })
+    }
+
+    getLoading () {
+        return this.loading
     }
 
     getCurrentLeaderboard () {
@@ -114,6 +115,12 @@ class LiveLeaderboardStore extends EventEmitter {
     }
 
     leaderboardChange (snapshot, newEntry) {
+        console.log('lb', this.initialLeaderboard)
+        this.loading = false
+        if (this.initialLeaderboard === undefined) {
+            setTimeout(() => { this.leaderboardChange(snapshot, newEntry) }, 1000)
+            return
+        }
         const uid = snapshot.key
 
         if (newEntry) {
@@ -180,20 +187,20 @@ class LiveLeaderboardStore extends EventEmitter {
     }
 
     resetLeaderboard () {
+        console.log('in reset')
         return firebase.database().ref('/weeklyLeaderboard/').once('value').then((leaderboardSnapshot) => {
             return leaderboardSnapshot
-        }).then((leaderboardSnapshot) => {
-            const lbData = leaderboardSnapshot.val()
-            this.initialLeaderboard = lbData
+        }).then((leaderboardSnapshot) => {            
+            this.initialLeaderboard = leaderboardSnapshot.val()            
             // Save the current leaderboard into local storage for retrival later
             localStorage.setItem('leaderboard', JSON.stringify(this.initialLeaderboard))
             this.currentLeaderboard = {}
+            console.log('set db', this.initialLeaderboard)
             this.emit('change')
         })
     }
 
     handleActions (action) {
-        console.log(action)
         switch (action.type) {
         case 'LEADERBOARD_LOAD' : {
             this.loadLeaderboard(action.value)

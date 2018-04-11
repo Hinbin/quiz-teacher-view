@@ -1,5 +1,5 @@
 import firebase from 'firebase'
-import fire from '../src/fire'
+import fire from '../src/constants/fire'
 
 module.exports = {
 

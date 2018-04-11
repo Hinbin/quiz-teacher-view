@@ -21,10 +21,13 @@ module.exports = {
             .perform((done) => {
                 globals.setupDatabase().then(done())
             })
+        
+        browser.pause(1000)
             .init()
             .waitForElementVisible('#reset-button', 20000)
             .click('#reset-button')
-            .pause(1000)
+
+
     },
     'Check all users appear': (browser) => {
         browser

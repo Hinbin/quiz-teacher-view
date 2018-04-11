@@ -9,7 +9,6 @@ import QuestionAnalysis from './Pages/QuestionAnalysis'
 import withAuthentication from './hoc/withAuthentication'
 import SignIn from './Pages/SignIn'
 import * as routes from './Constants/routes'
-import withLoading from './hoc/withLoading'
 
 class App extends Component {
     render () {

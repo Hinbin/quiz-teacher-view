@@ -26,7 +26,8 @@ module.exports = {
                 globals.setScore('ABCDEF', 5).then(done())
             })
             .init()
-            .waitForElementVisible('#reset-button', 20000)
+            .waitForElementVisible('#reset-button', 2000)
+        browser.pause(1000)
         leaderboard.reset()
     },
     'See if score changes by one': (browser) => {

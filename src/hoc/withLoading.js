@@ -1,20 +1,9 @@
+
 import React from 'react'
-const withLoading = (WrappedComponent) => {
-    class _withLoading extends React.Component {
-        constructor (props) {
-            super(props)
-            this.state = {
-                isLoading: true
-            }
-        }
-
-        render () {
-            if (!this.state.isLoading) return (<WrappedComponent isLoading {...this.props} />)
-            return (<p>Be Hold, fetching data may take some time :)</p>)
-        }
+function WithLoading (Component) {
+    return function WithLoadingComponent ({ isLoading, ...props }) {
+        if (!isLoading) return (<Component {...props} />)
+        return (<div className='loader'>Loading...</div>)
     }
-
-    return _withLoading
 }
-
-export default withLoading
+export default WithLoading

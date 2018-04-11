@@ -1,18 +1,27 @@
 import React from 'react'
 import { Table, Row, Button, FormGroup } from 'reactstrap'
+import { compose } from 'recompose'
 
 import LiveLeaderboardStore from '../Stores/LiveLeaderboardStore'
 import * as LiveLeaderboardActions from '../Actions/LiveLeaderboardActions'
 import Entry from '../Components/LiveLeaderboard/Entry'
 import Filters from '../Components/Filters/Filters'
 import withAuthorization from '../hoc/withAuthorization'
+import withLoading from '../hoc/withLoading'
 import * as auth from '../Constants/auth'
+
+function ResetButton (props) {
+    return (<Button id='reset-button' {...props}>Reset</Button>)
+}
+
+const ResetButtonWithLoading = withLoading(ResetButton)
 
 class LiveLeaderboard extends React.Component {
     constructor () {
         super()
         this.state = {
             leaderboard: LiveLeaderboardStore.getCurrentLeaderboard(),
+            loading: LiveLeaderboardStore.getLoading(),
             currentFilters: {}
         }
         this.getLeaderboard = this.getLeaderboard.bind(this)
@@ -31,7 +40,8 @@ class LiveLeaderboard extends React.Component {
 
     getLeaderboard () {
         this.setState({
-            leaderboard: LiveLeaderboardStore.getCurrentLeaderboard()
+            leaderboard: LiveLeaderboardStore.getCurrentLeaderboard(),
+            loading: LiveLeaderboardStore.getLoading()
         })
     }
 
@@ -76,6 +86,7 @@ class LiveLeaderboard extends React.Component {
 
     render () {
         const leaderboard = this.sortLeaderboard()
+        const loading = this.state.loading
 
         // Map every entry in the current leaderboard array into an entry component
         const Entries = leaderboard.map((entry) => {
@@ -90,7 +101,7 @@ class LiveLeaderboard extends React.Component {
                 <Row className='form-row align-items-center d-flex justify-content-around'>
                     <Filters getFilters={this.getFilters} />
                     <FormGroup>
-                        <Button id='reset-button' onClick={() => this.resetLeaderboard()}>Reset</Button>
+                        <ResetButton isLoading={loading} onClick={() => this.resetLeaderboard()} />
                     </FormGroup>
                 </Row>
                 <Row>
@@ -117,4 +128,7 @@ const authCondition = (authUser) => {
     return (!!authUser && auth.authDomain(authUser.email))
 }
 
-export default withAuthorization(authCondition)(LiveLeaderboard)
+export default compose(
+    withLoading,
+    withAuthorization(authCondition)
+)(LiveLeaderboard)

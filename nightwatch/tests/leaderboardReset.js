@@ -22,10 +22,13 @@ module.exports = {
             .perform((done) => {
                 globals.loadDatabase(filterDB).then(done())
             })
-            .init()
+            
+        browser.pause(1000)
+
+        browser.init()
             .waitForElementVisible('#reset-button', 20000)
             .click('#reset-button')
-            .pause(1000)
+
     },
     'Check scores are set after reset': function (browser) {
         browser

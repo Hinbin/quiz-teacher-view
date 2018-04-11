@@ -24,6 +24,7 @@ module.exports = {
             })
             .waitForElementVisible('#reset-button', 20000)
 
+        browser.pause(1000)
         leaderboard.reset()
     },
     'Check all users are added at start': function (browser) {

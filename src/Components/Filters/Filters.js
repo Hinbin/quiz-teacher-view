@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import FilterStore from '../../Stores/FilterStore'
 import Filter from './Filter'
 
-export default class Filters extends React.Component {
+class Filters extends React.Component {
     constructor (props) {
         super(props)
 
@@ -69,3 +69,5 @@ Filters.propTypes = {
     getFilters: PropTypes.func,
     selectFilter: PropTypes.func
 }
+
+export default Filters
