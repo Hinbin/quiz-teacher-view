@@ -6,8 +6,8 @@ import firebase from '../Constants/fire'
 class QuestionAnalysisStore extends EventEmitter {
     constructor () {
         super()
-        this.questionAnalysis = {}
-        this.DAMPING_VALUE = 4
+        this.questionData = {}
+        this.questionAnalysis = []
         this.path = ['Computer Science', 'Overall']
         this.oldPath = []
     }
@@ -17,52 +17,56 @@ class QuestionAnalysisStore extends EventEmitter {
     }
 
     handleSchoolAnalysis (schoolName, path) {
-        let db = firebase.database()
+        this.questionData = {}
 
-        let questionHistory = {}
+        let db = firebase.database()
 
         // Get a list of the users that belong to the school chosen
         db.ref('/users').orderByChild('school').equalTo(schoolName).once('value').then((snapshot) => {
             return snapshot
         }).then((userSnapshot) => {
+            let promiseArray = []
             // For each user in that school...
             userSnapshot.forEach((user) => {
                 // Get the answer history for the user for the subject selected
-                let key = 'answerHistory/' + user.key + '/' + path[0] + '/GCSE/'
-                db.ref(key).once('value').then((subjectSnapshot) => {
+                let key = 'questionAnalysis/' + user.key + '/' + path[0] + '/GCSE/'
+                let promise = db.ref(key).once('value').then((subjectSnapshot) => {
                     // Then go through each topic and submit each question for analysis
                     subjectSnapshot.forEach((topicSnapshot) => {
-                        topicSnapshot.forEach((questionSnapshot) => {
-                            this.doQuestionAnalysis(questionSnapshot, questionHistory)
-                        })
+                        this.addQuestion(topicSnapshot)
                     })
                 })
+
+                promiseArray.push(promise)
             })
 
-            console.log(this.questionAnalysis)
+            Promise.all(promiseArray).then(() => this.orderAnalysis())
         })
     }
 
-    doQuestionAnalysis (question, questionHistory) {
-        let questionObj = question.val()
-        questionObj.topic = question.ref.parent.key
-        if (questionHistory[question.key] !== undefined) {
-            let questionData = questionHistory[question.key]
-            let {timesAttempted, timesIncorrect} = questionObj
-
-            // If the times attempted is greater than the damping value,
-            // scale the times attempted to the correct % for the damping value
-            if (questionObj.timesAttempted > this.DAMPING_VALUE) {
-                let percentIncorrect = timesIncorrect / timesAttempted
-                timesIncorrect = this.DAMPING_VALUE * percentIncorrect
-                timesAttempted = this.DAMPING_VALUE
-            }
-            questionData.timesAttempted += timesAttempted
-            questionData.timesIncorrect += timesIncorrect
-            questionHistory[question.key] = questionData
-        } else {
-            questionHistory[question.key] = questionObj
+    orderAnalysis () {
+        let questionData = this.questionData
+        let questionAnalysis = []
+        for (let i in questionData) {
+            let {correct, incorrect} = questionData[i]
+            questionData[i].percentCorrect = correct / (correct + incorrect)
+            questionAnalysis.push(questionData[i])
         }
+        questionAnalysis.sort((a, b) => { return a.percentCorrect > b.percentCorrect })
+
+        this.questionAnalysis = questionAnalysis
+
+        this.emit('change')
+    }
+
+    addQuestion (question) {
+        let questionObj = question.val()
+        let { questionHash, correct } = questionObj
+        if (this.questionData[questionHash] === undefined) {
+            this.questionData[questionHash] = { correct: 0, incorrect: 0 }
+        }
+
+        correct ? this.questionData[questionHash].correct++ : this.questionData[questionHash].incorrect++
     }
 
     getQuestionAnalysis () {

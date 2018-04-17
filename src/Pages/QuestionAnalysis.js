@@ -35,7 +35,7 @@ class QuestionAnalysis extends React.Component {
 
     getQuestionAnalysis () {
         this.setState({
-            questionAnalysis: QuestionAnalysisStore.getQuestionHistory()
+            questionAnalysis: QuestionAnalysisStore.getQuestionAnalysis()
         })
     }
 

@@ -1,0 +1,266 @@
+{
+  "questionAnalysis" : {
+    "ABCDEF" : {
+      "Computer Science" : {
+        "GCSE" : {
+          "-LAK0RVFxF2tLnX0XzaU" : {
+            "correct" : false,
+            "questionHash" : -999588863,
+            "timestamp" : 1523992348803
+          },
+          "-LAK0TRgBsvYUkk74AnT" : {
+            "correct" : false,
+            "questionHash" : 594146537,
+            "timestamp" : 1523992356768
+          },
+          "-LAK0W_d7wIvzKG21Qkw" : {
+            "correct" : false,
+            "questionHash" : -1762070480,
+            "timestamp" : 1523992369626
+          },
+          "-LAK1QUjxUk-xTEamaGW" : {
+            "correct" : true,
+            "questionHash" : 1107991637,
+            "timestamp" : 1523992606817
+          },
+          "-LAK1QnhDyFOv5rIPKrR" : {
+            "correct" : true,
+            "questionHash" : -1718118904,
+            "timestamp" : 1523992608095
+          },
+          "-LAK1R9zajuBgMW7sBBy" : {
+            "correct" : true,
+            "questionHash" : 195827454,
+            "timestamp" : 1523992609585
+          },
+          "-LAK1RTVVPJ5-Fj0L0FN" : {
+            "correct" : true,
+            "questionHash" : -1626587291,
+            "timestamp" : 1523992610834
+          },
+          "-LAK1SejPGHF2PAlX41_" : {
+            "correct" : false,
+            "questionHash" : -950425540,
+            "timestamp" : 1523992615713
+          },
+          "-LAK1YBIKL3yKAUrl6Ts" : {
+            "correct" : false,
+            "questionHash" : -17672887,
+            "timestamp" : 1523992638360
+          },
+          "-LAK24JXSH5Jf4GnNEAm" : {
+            "correct" : false,
+            "questionHash" : -1404562861,
+            "timestamp" : 1523992778132
+          }
+        }
+      }
+    },
+    "GHIJKL" : {
+      "Computer Science" : {
+        "GCSE" : {
+          "-LAK0RVFxF2tLnX0XzaU" : {
+            "correct" : true,
+            "questionHash" : -999588863,
+            "timestamp" : 1523992348803
+          },
+          "-LAK0TRgBsvYUkk74AnT" : {
+            "correct" : false,
+            "questionHash" : 594146537,
+            "timestamp" : 1523992356768
+          },
+          "-LAK0W_d7wIvzKG21Qkw" : {
+            "correct" : true,
+            "questionHash" : -1762070480,
+            "timestamp" : 1523992369626
+          },
+          "-LAK1QUjxUk-xTEamaGW" : {
+            "correct" : true,
+            "questionHash" : 1107991637,
+            "timestamp" : 1523992606817
+          },
+          "-LAK1QnhDyFOv5rIPKrR" : {
+            "correct" : true,
+            "questionHash" : -1718118904,
+            "timestamp" : 1523992608095
+          },
+          "-LAK1R9zajuBgMW7sBBy" : {
+            "correct" : true,
+            "questionHash" : 195827454,
+            "timestamp" : 1523992609585
+          },
+          "-LAK1RTVVPJ5-Fj0L0FN" : {
+            "correct" : true,
+            "questionHash" : -1626587291,
+            "timestamp" : 1523992610834
+          },
+          "-LAK1SejPGHF2PAlX41_" : {
+            "correct" : true,
+            "questionHash" : -950425540,
+            "timestamp" : 1523992615713
+          },
+          "-LAK1YBIKL3yKAUrl6Ts" : {
+            "correct" : false,
+            "questionHash" : -17672887,
+            "timestamp" : 1523992638360
+          },
+          "-LAK24JXSH5Jf4GnNEAm" : {
+            "correct" : true,
+            "questionHash" : -1404562861,
+            "timestamp" : 1523992778132
+          }
+        }
+      }
+    },
+    "MNOPQR" : {
+      "Computer Science" : {
+        "GCSE" : {
+          "-LAK0RVFxF2tLnX0XzaU" : {
+            "correct" : false,
+            "questionHash" : -999588863,
+            "timestamp" : 1523992348803
+          },
+          "-LAK0TRgBsvYUkk74AnT" : {
+            "correct" : false,
+            "questionHash" : 594146537,
+            "timestamp" : 1523992356768
+          },
+          "-LAK0W_d7wIvzKG21Qkw" : {
+            "correct" : true,
+            "questionHash" : -1762070480,
+            "timestamp" : 1523992369626
+          },
+          "-LAK1QUjxUk-xTEamaGW" : {
+            "correct" : true,
+            "questionHash" : 1107991637,
+            "timestamp" : 1523992606817
+          },
+          "-LAK1QnhDyFOv5rIPKrR" : {
+            "correct" : true,
+            "questionHash" : -1718118904,
+            "timestamp" : 1523992608095
+          },
+          "-LAK1R9zajuBgMW7sBBy" : {
+            "correct" : true,
+            "questionHash" : 195827454,
+            "timestamp" : 1523992609585
+          },
+          "-LAK1RTVVPJ5-Fj0L0FN" : {
+            "correct" : true,
+            "questionHash" : -1626587291,
+            "timestamp" : 1523992610834
+          },
+          "-LAK1SejPGHF2PAlX41_" : {
+            "correct" : true,
+            "questionHash" : -950425540,
+            "timestamp" : 1523992615713
+          },
+          "-LAK1YBIKL3yKAUrl6Ts" : {
+            "correct" : false,
+            "questionHash" : -17672887,
+            "timestamp" : 1523992638360
+          },
+          "-LAK24JXSH5Jf4GnNEAm" : {
+            "correct" : false,
+            "questionHash" : -1404562861,
+            "timestamp" : 1523992778132
+          }
+        }
+      }
+    }
+  },
+  "questionDetails" : {
+    "Computer Science" : {
+      "GCSE" : {
+        "-1762070480" : {
+          "correctAnswer" : "101 001 110",
+          "questionText" : "Above is a bitmap file that looks as follows. Which is the correct binary representation for this image?"
+        },
+        "-1718118904" : {
+          "correctAnswer" : "The resulting picture is not displayed properly.",
+          "questionText" : "If image metadata is corrupted,"
+        },
+        "-1626587291" : {
+          "correctAnswer" : "WAN",
+          "questionText" : "Is the following statement describing a LAN, a WAN or both? Network is created by using the telecommunications network (e.g. phone line, mobile phone network)"
+        },
+        "-1404562861" : {
+          "correctAnswer" : "True",
+          "questionText" : "An example of a high level language is Python"
+        },
+        "-999588863" : {
+          "correctAnswer" : "The amount of time data takes to travel from the source to the destination",
+          "questionText" : "What is meant by latency?"
+        },
+        "-950425540" : {
+          "correctAnswer" : "Integer",
+          "questionText" : "What data type would Quantity Left be?"
+        },
+        "-17672887" : {
+          "correctAnswer" : "First number is bigger",
+          "questionText" : "Look at the flowchart above and decide what it would output if num1 = 8 and num2 = 5"
+        },
+        "195827454" : {
+          "correctAnswer" : "It holds instructions and data likely to be reused",
+          "questionText" : "The cache is a small amount of memory part of the CPU that does what?"
+        },
+        "594146537" : {
+          "correctAnswer" : "Accumulator",
+          "questionText" : "Stores the result of arithmetic calculations"
+        },
+        "1107991637" : {
+          "correctAnswer" : "0-255",
+          "questionText" : "What is the range of numbers in denary that can be stored in 2 digits of hexadecimal?"
+        }
+      }
+    }
+  },
+  "schools" : {
+    "adwickoutwoodcom" : "Outwood Academy Adwick",
+    "grangeoutwoodcom" : "Outwood Grange",
+    "studentadwickoutwoodcom" : "Outwood Academy Adwick",
+    "studentgrangeoutwoodcom" : "Outwood Grange",
+    "testschoolcom" : "Test School"
+  },
+  "users" : {
+    "ABCDEF" : {
+      "displayName" : "Alice",
+      "isTeacher" : false,
+      "school" : "Test School"
+    },
+    "GHIJKL" : {
+      "displayName" : "Bob",
+      "isTeacher" : false,
+      "school" : "Outwood Grange"
+    },
+    "MNOPQR" : {
+      "displayName" : "Charlie",
+      "isTeacher" : false,
+      "school" : "Test School"
+    },
+    "STUVWX" : {
+      "displayName" : "Dave",
+      "isTeacher" : false,
+      "school" : "Test School"
+    }
+  },
+  "weeklyLeaderboard" : {
+    "Computer Science" : {
+      "Overall" : {
+        "ABCDEF" : 7,
+        "GHIJKL" : 7
+      },
+      "System Architecture" : {
+        "ABCDEF" : 5
+      }
+    },
+    "History" : {
+      "Overall" : {
+        "GHIJKL" : 5
+      },
+      "WW2" : {
+        "GHIJKL" : 5
+      }
+    }
+  }
+}
