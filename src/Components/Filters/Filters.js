@@ -50,9 +50,7 @@ class Filters extends React.Component {
                 return selectedFilter.name === filter.name
             })[0]
             if (selected === undefined) {
-                if (filter.name === 'Schools') {
-                    selected = 'Select School'
-                }
+                selected = filter.default
             } else {
                 selected = selected.option
             }

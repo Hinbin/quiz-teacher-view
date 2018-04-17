@@ -32,13 +32,13 @@ class FilterStore extends EventEmitter {
             break
         }
 
-        case 'FILTER_CHANGE' : {
-            this.filterChange(action.value)
+        case 'FILTER_LOAD_FROM' : {
+            this.loadFrom()
             break
         }
 
-        case 'LOAD_WEEKLY_SNAPSHOT' : {
-            this.loadTopicsAndSubjects(action.value)
+        case 'FILTER_CHANGE' : {
+            this.filterChange(action.value)
             break
         }
 
@@ -120,10 +120,20 @@ class FilterStore extends EventEmitter {
 
             this.filters.unshift({
                 name: 'Schools',
-                options: schoolArray})
+                options: schoolArray,
+                default: 'Select School'})
 
             this.emit('change')
         })
+    }
+
+    loadFrom () {
+        this.filters.push({
+            name: 'From',
+            options: ['Last Hour', 'Today', 'This Week'],
+            default: 'Last Hour'
+        })
+
     }
 
     getFilters () {
@@ -146,6 +156,10 @@ class FilterStore extends EventEmitter {
         this.currentFilters.push(value)
 
         if (value.name === 'Subjects') {
+            this.filterChange({
+                name: 'Topics',
+                option: 'Overall'
+            })
             this.changeTopics(value.option)
         }
 

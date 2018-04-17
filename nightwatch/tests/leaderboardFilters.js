@@ -116,7 +116,7 @@ module.exports = {
                 globals.addPoint('GHIJKL', 'weeklyLeaderboard/Computer Science/Overall/').then(done())
             })
             .expect.element('#GHIJKL').to.be.present
-        browser.expect.element('#ABCDEF ').to.not.be.present
+        browser.expect.element('#ABCDEF').to.not.be.present
         browser.end()
     }
 }

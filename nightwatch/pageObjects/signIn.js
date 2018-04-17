@@ -8,7 +8,7 @@ var signInCommands = {
             .waitForElementVisible('@password')
             .setValue('@password', password)
             .click('@submit')
-            .waitForElementVisible('@signOutButton')
+            .waitForElementVisible('@signOutButton', 10000)
     }
 }
 

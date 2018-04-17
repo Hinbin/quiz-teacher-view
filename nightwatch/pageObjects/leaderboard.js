@@ -21,7 +21,7 @@ var leaderboardCommands = {
     reset: function () {
         this.click('@resetButton')
         this.waitForElementPresent('@schoolFilter')
-        this.api.pause(1000)
+        this.api.pause(2000)
     }
 }
 

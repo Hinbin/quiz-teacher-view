@@ -12,12 +12,13 @@ class QuestionAnalysis extends React.Component {
     constructor () {
         super()
         this.state = {
-            questionAnalysis: QuestionAnalysisStore.getQuestionHistory(),
+            path: QuestionAnalysisStore.getPath(),
+            questionAnalysis: QuestionAnalysisStore.getQuestionAnalysis(),
             currentFilters: {}
         }
         this.getFilters = this.getFilters.bind(this)
         this.getQuestionAnalysis = this.getQuestionAnalysis.bind(this)
-        QuestionAnalysisActions.loadQuestionAnalysis()
+        QuestionAnalysisActions.loadQuestionAnalysis(this.state.path)
     }
 
     componentWillMount () {
@@ -28,14 +29,14 @@ class QuestionAnalysis extends React.Component {
         QuestionAnalysisStore.removeListener('change', this.getQuestionAnalysis)
     }
 
-    getQuestionAnalysis () {
-        this.setState({
-            questionHistory: QuestionAnalysisStore.getQuestionHistory()
-        })
-    }
-
     getFilters (filters) {
         this.setState({currentFilters: filters})
+    }
+
+    getQuestionAnalysis () {
+        this.setState({
+            questionAnalysis: QuestionAnalysisStore.getQuestionHistory()
+        })
     }
 
     render () {

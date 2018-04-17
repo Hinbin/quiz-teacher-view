@@ -11,7 +11,6 @@ class LiveLeaderboardStore extends EventEmitter {
         this.lastChanged = ''
         this.path = ['Computer Science', 'Overall']
         this.oldPath = []
-        this.loading = true
     }
 
     listenToLeaderboard () {
@@ -56,7 +55,7 @@ class LiveLeaderboardStore extends EventEmitter {
 
         return this.loadInitialScores().then((initialLeaderboard) => {
             this.listenToLeaderboard(this.path, this.oldPath)
-            this.currentLeaderboard = {}            
+            this.currentLeaderboard = {}
             this.emit('change')
         })
     }
@@ -77,7 +76,7 @@ class LiveLeaderboardStore extends EventEmitter {
         const oldPath = this.path
         let newPath
         if (value.name === 'Subjects') {
-            newPath = [value.option, oldPath[1]]
+            newPath = [value.option, 'Overall']
         } else if (value.name === 'Topics') {
             newPath = [oldPath[0], value.option]
         }
@@ -87,9 +86,7 @@ class LiveLeaderboardStore extends EventEmitter {
             path: newPath
         }
 
-        if (value.name !== 'Schools') this.loadLeaderboard(paths)
-
-        this.emit('change')
+        if (value.name !== 'Schools') this.loadLeaderboard(paths).then(() => this.emit('change'))
     }
 
     getUserDetails (snapshot) {
@@ -115,16 +112,17 @@ class LiveLeaderboardStore extends EventEmitter {
     }
 
     leaderboardChange (snapshot, newEntry) {
-        console.log('lb', this.initialLeaderboard)
         this.loading = false
         if (this.initialLeaderboard === undefined) {
             setTimeout(() => { this.leaderboardChange(snapshot, newEntry) }, 1000)
-            return
         }
+
         const uid = snapshot.key
 
         if (newEntry) {
-            this.initialLeaderboard[this.path[0]][this.path[1]][uid] = 0
+            if (this.initialLeaderboard[this.path[0]][this.path[1]][uid] === undefined) {
+                this.initialLeaderboard[this.path[0]][this.path[1]][uid] = 0
+            }
         }
 
         this.getUserDetails(snapshot)
@@ -187,15 +185,13 @@ class LiveLeaderboardStore extends EventEmitter {
     }
 
     resetLeaderboard () {
-        console.log('in reset')
         return firebase.database().ref('/weeklyLeaderboard/').once('value').then((leaderboardSnapshot) => {
             return leaderboardSnapshot
-        }).then((leaderboardSnapshot) => {            
-            this.initialLeaderboard = leaderboardSnapshot.val()            
+        }).then((leaderboardSnapshot) => {
+            this.initialLeaderboard = leaderboardSnapshot.val()
             // Save the current leaderboard into local storage for retrival later
             localStorage.setItem('leaderboard', JSON.stringify(this.initialLeaderboard))
             this.currentLeaderboard = {}
-            console.log('set db', this.initialLeaderboard)
             this.emit('change')
         })
     }
